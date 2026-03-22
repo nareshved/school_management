@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Teacher Management | The Scholastic Curator</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary-fixed-dim": "#bdc2ff",
+                        "tertiary-container": "#4b2600",
+                        "tertiary-fixed": "#ffdcc2",
+                        "outline": "#767683",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-tertiary": "#ffffff",
+                        "secondary-container": "#8df5e4",
+                        "surface-container-highest": "#e2e2e2",
+                        "on-secondary-fixed-variant": "#005048",
+                        "on-secondary": "#ffffff",
+                        "surface": "#f9f9f9",
+                        "secondary-fixed-dim": "#70d8c8",
+                        "surface-container-low": "#f3f3f3",
+                        "on-surface-variant": "#454652",
+                        "secondary-fixed": "#8df5e4",
+                        "on-primary-container": "#8690ee",
+                        "surface-variant": "#e2e2e2",
+                        "outline-variant": "#c6c5d4",
+                        "inverse-surface": "#2f3131",
+                        "inverse-primary": "#bdc2ff",
+                        "surface-bright": "#f9f9f9",
+                        "secondary": "#006b5f",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed": "#e0e0ff",
+                        "on-primary-fixed-variant": "#343d96",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#f0f1f1",
+                        "on-surface": "#1a1c1c",
+                        "surface-tint": "#4c56af",
+                        "on-tertiary-container": "#e17e00",
+                        "on-primary-fixed": "#000767",
+                        "primary": "#000666",
+                        "on-secondary-fixed": "#00201c",
+                        "background": "#f9f9f9",
+                        "surface-container-high": "#e8e8e8",
+                        "on-background": "#1a1c1c",
+                        "tertiary-fixed-dim": "#ffb77a",
+                        "surface-container": "#eeeeee",
+                        "on-error-container": "#93000a",
+                        "primary-container": "#1a237e",
+                        "on-tertiary-fixed": "#2e1500",
+                        "on-secondary-container": "#007165",
+                        "tertiary": "#2d1400",
+                        "surface-dim": "#dadada",
+                        "on-tertiary-fixed-variant": "#6d3a00",
+                        "error": "#ba1a1a"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9f9f9;
+        }
+        .headline-font { font-family: 'Manrope', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="text-on-surface selection:bg-secondary-container">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/85 backdrop-blur-md shadow-[0_8px_32px_rgba(26,6,102,0.06)]">
+<div class="flex items-center justify-between px-6 h-16 w-full max-w-none">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container overflow-hidden">
+<img alt="Admin" class="w-full h-full object-cover" data-alt="Close up profile photo of a professional man" src="https://lh3.googleusercontent.com/aida-public/AB6AXuARj-QgeOQGKvx55I-wzq6f8e-yUHFh8yO2Vh4BelOs6eFjkMRiPg68CvwLWBnopK8qVnNHE9pZzU5M4XqH05nd2Uj4TvNV-TWUuyF4XfkHUaAS-GC0rXQGE0cwHgCAc-nW7x0RmW9v35BXMfJdesu1HP0E0Q463d9Mpq6eC3LO8n72bM51BmOmpc1pabAa8ImopQp5xJB26ePxGuDwkvllQfCLw1i7-ZdM_6CedfuvaHaxqE8ANs064R10KU623xn5qIC6S98ShRb9"/>
+</div>
+<h1 class="text-xl font-extrabold text-indigo-800 tracking-tighter headline-font">Teachers</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-full hover:bg-indigo-50 transition-colors">
+<span class="material-symbols-outlined text-indigo-900">search</span>
+</button>
+<button class="p-2 rounded-full hover:bg-indigo-50 transition-colors">
+<span class="material-symbols-outlined text-indigo-900">notifications</span>
+</button>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-32 px-6 max-w-7xl mx-auto">
+<!-- Header Section -->
+<section class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div class="space-y-1">
+<p class="text-sm font-semibold tracking-widest text-secondary uppercase opacity-80">Faculty Management</p>
+<h2 class="text-4xl font-extrabold text-indigo-900 headline-font tracking-tight">32 Teachers</h2>
+<p class="text-on-surface-variant font-medium">Overseeing academic excellence and classroom engagement.</p>
+</div>
+<button class="bg-gradient-to-r from-primary to-primary-container text-white px-8 py-4 rounded-full font-bold shadow-lg shadow-primary/20 flex items-center gap-2 hover:scale-[1.02] transition-transform active:scale-95">
+<span class="material-symbols-outlined">person_add</span>
+<span>Add New Faculty</span>
+</button>
+</section>
+<!-- Bento Grid / Asymmetric Layout -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Teacher Card 1 -->
+<div class="bg-surface-container-lowest rounded-[28px] p-6 shadow-[0_8px_32px_rgba(26,6,102,0.04)] border border-outline-variant/10 group hover:shadow-xl transition-all duration-300">
+<div class="flex items-start justify-between mb-6">
+<div class="flex items-center gap-4">
+<div class="relative">
+<img alt="Teacher" class="w-16 h-16 rounded-2xl object-cover" data-alt="Portrait of a female teacher smiling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXcPhCDcqkNMehSfDrIvoQB5fhYHTdAjzTUanKJZhz6xFonTvcZyjzFoUtYxMWUU-U3wZgZkH3I0KXimB_ZIWdl3Ffux1hfiaUJkoB85gNEuOZobWmlZBQO-QUtIGn39a7toe_L44o44HM3cWzVXF6jSo7mGtTvC--qpe5qsTXHUyGUuQzukosVXSm90kXGP5rgSO3aYGNTvIFCLsrPPpLda2paRUISZCXonIMQTHyZxfG-Dp1aDYhhBvvOfg4U_0VByKeDBZYd1cW"/>
+<div class="absolute -bottom-1 -right-1 w-5 h-5 bg-secondary rounded-full border-4 border-surface-container-lowest"></div>
+</div>
+<div>
+<h3 class="font-bold text-lg text-indigo-900 headline-font">Sarah Jenkins</h3>
+<p class="text-on-surface-variant text-sm font-medium">Advanced Mathematics</p>
+</div>
+</div>
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-xl text-xs font-bold tracking-tight">CLASS 9-B</span>
+</div>
+<div class="grid grid-cols-3 gap-2 mb-8">
+<div class="bg-surface-container-low rounded-2xl p-3 text-center">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Students</p>
+<p class="text-lg font-extrabold text-indigo-900">45</p>
+</div>
+<div class="bg-surface-container-low rounded-2xl p-3 text-center">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Attendance</p>
+<p class="text-lg font-extrabold text-secondary">98%</p>
+</div>
+<div class="bg-surface-container-low rounded-2xl p-3 text-center">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Rating</p>
+<div class="flex items-center justify-center gap-0.5">
+<p class="text-lg font-extrabold text-indigo-900">4.5</p>
+<span class="material-symbols-outlined text-[14px] text-tertiary-fixed-dim active-icon" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 py-3 rounded-2xl font-bold text-secondary border border-outline-variant/30 hover:bg-secondary/5 transition-colors">Edit</button>
+<button class="flex-1 py-3 rounded-2xl font-bold bg-indigo-50 text-indigo-900 hover:bg-indigo-100 transition-colors">View Profile</button>
+</div>
+</div>
+<!-- Teacher Card 2 (Asymmetric Variation) -->
+<div class="bg-surface-container-lowest rounded-[28px] p-6 shadow-[0_8px_32px_rgba(26,6,102,0.04)] border border-outline-variant/10 group hover:shadow-xl transition-all duration-300">
+<div class="flex items-start justify-between mb-6">
+<div class="flex items-center gap-4">
+<div class="relative">
+<img alt="Teacher" class="w-16 h-16 rounded-2xl object-cover" data-alt="Portrait of a male teacher in a suit" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDy1WauqmwWDtHNNugoPGVrpjOgkuiEhtNjtozxG90oXiyDWTPGN_frodaVGz-mX_au1vWSXdQQ1LNQMcKimzSco4onaa5zugxI3WeGRXUohMssXoeUFpWOzBZ8bJWlbXeXSb4sZxUUp2tpXbSMlrgzi0nYYn8TZwTMWWdQWCs8F2-VBW1K6QvGUWowxb6pS2Q39Ld24GjnuO2ARBsUKNydUfIZw49POKeFOPiPUTbCz_ssziQly39DR9JoXmpzA86vBFZZbc-Q_zWk"/>
+<div class="absolute -bottom-1 -right-1 w-5 h-5 bg-secondary rounded-full border-4 border-surface-container-lowest"></div>
+</div>
+<div>
+<h3 class="font-bold text-lg text-indigo-900 headline-font">Robert Chen</h3>
+<p class="text-on-surface-variant text-sm font-medium">Quantum Physics</p>
+</div>
+</div>
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-xl text-xs font-bold tracking-tight">CLASS 12-A</span>
+</div>
+<div class="grid grid-cols-3 gap-2 mb-8">
+<div class="bg-surface-container-low rounded-2xl p-3 text-center">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Students</p>
+<p class="text-lg font-extrabold text-indigo-900">32</p>
+</div>
+<div class="bg-surface-container-low rounded-2xl p-3 text-center">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Attendance</p>
+<p class="text-lg font-extrabold text-secondary">94%</p>
+</div>
+<div class="bg-surface-container-low rounded-2xl p-3 text-center">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Rating</p>
+<div class="flex items-center justify-center gap-0.5">
+<p class="text-lg font-extrabold text-indigo-900">4.9</p>
+<span class="material-symbols-outlined text-[14px] text-tertiary-fixed-dim active-icon" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 py-3 rounded-2xl font-bold text-secondary border border-outline-variant/30 hover:bg-secondary/5 transition-colors">Edit</button>
+<button class="flex-1 py-3 rounded-2xl font-bold bg-indigo-50 text-indigo-900 hover:bg-indigo-100 transition-colors">View Profile</button>
+</div>
+</div>
+<!-- Teacher Card 3 -->
+<div class="bg-surface-container-lowest rounded-[28px] p-6 shadow-[0_8px_32px_rgba(26,6,102,0.04)] border border-outline-variant/10 group hover:shadow-xl transition-all duration-300">
+<div class="flex items-start justify-between mb-6">
+<div class="flex items-center gap-4">
+<div class="relative">
+<img alt="Teacher" class="w-16 h-16 rounded-2xl object-cover" data-alt="Portrait of a female instructor wearing glasses" src="https://lh3.googleusercontent.com/aida-public/AB6AXuATq7ADoePH1lVt0yapSFo2YhKNTfCuQZTGbscfGFqSxJBMwY6O1xrtdycV4h3j5Bd9fLmJEeg9C2_2p_GAYDKufu47VQVXGcP8km4SvQyXHMZtTH9j0TEorDneGtx6spFvoNkER4ArLIH9YJDysk2xdu5CwHyjWA99YU4sFJ6-jpu8SdHbc59MVnEzCdL2g7ax6bar5P8hKkQZKAC6THxBT6dDdlJSqMO_r54iZTGY1RaB0xGJvTR5B4835CwJgtU3ols-tHlnEv39"/>
+<div class="absolute -bottom-1 -right-1 w-5 h-5 bg-tertiary-fixed-dim rounded-full border-4 border-surface-container-lowest"></div>
+</div>
+<div>
+<h3 class="font-bold text-lg text-indigo-900 headline-font">Elena Rodriguez</h3>
+<p class="text-on-surface-variant text-sm font-medium">World Literature</p>
+</div>
+</div>
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-xl text-xs font-bold tracking-tight">CLASS 10-C</span>
+</div>
+<div class="grid grid-cols-3 gap-2 mb-8">
+<div class="bg-surface-container-low rounded-2xl p-3 text-center">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Students</p>
+<p class="text-lg font-extrabold text-indigo-900">58</p>
+</div>
+<div class="bg-surface-container-low rounded-2xl p-3 text-center">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Attendance</p>
+<p class="text-lg font-extrabold text-secondary">91%</p>
+</div>
+<div class="bg-surface-container-low rounded-2xl p-3 text-center">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Rating</p>
+<div class="flex items-center justify-center gap-0.5">
+<p class="text-lg font-extrabold text-indigo-900">4.2</p>
+<span class="material-symbols-outlined text-[14px] text-tertiary-fixed-dim active-icon" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 py-3 rounded-2xl font-bold text-secondary border border-outline-variant/30 hover:bg-secondary/5 transition-colors">Edit</button>
+<button class="flex-1 py-3 rounded-2xl font-bold bg-indigo-50 text-indigo-900 hover:bg-indigo-100 transition-colors">View Profile</button>
+</div>
+</div>
+<!-- Additional Cards to demonstrate scale -->
+<div class="bg-surface-container-lowest rounded-[28px] p-6 shadow-[0_8px_32px_rgba(26,6,102,0.04)] border border-outline-variant/10 group hover:shadow-xl transition-all duration-300">
+<div class="flex items-start justify-between mb-6">
+<div class="flex items-center gap-4">
+<div class="relative">
+<img alt="Teacher" class="w-16 h-16 rounded-2xl object-cover" data-alt="Portrait of a male teacher in casual attire" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6AnKKQ7v3zBcLL-8W3F0DST-n6x14KKSzWFCXMzXQUC2NlyKaTBcBtEjsqxTgzso02tHTwEEYKwypFhve_dMVU9_wEaRbMTdUckGk6gV9DASjW4Ye8qe4nLDsTFpYFnTqopVf9oNwf4W9J-PpLkR1Yxpql1DqMRjsAiO-HGGvFS3JJXcd_XU0f0ks93kEL14m5mok5QQYBlRrWsMOywZQ1QF-EaAYZTievWMw6HnUYzKwMRxoxzPBgSsNr8YqdoqIZaJ6lTaJmOfE"/>
+<div class="absolute -bottom-1 -right-1 w-5 h-5 bg-secondary rounded-full border-4 border-surface-container-lowest"></div>
+</div>
+<div>
+<h3 class="font-bold text-lg text-indigo-900 headline-font">Marcus Thorne</h3>
+<p class="text-on-surface-variant text-sm font-medium">Computer Science</p>
+</div>
+</div>
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-xl text-xs font-bold tracking-tight">LAB-A</span>
+</div>
+<div class="grid grid-cols-3 gap-2 mb-8">
+<div class="bg-surface-container-low rounded-2xl p-3 text-center">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Students</p>
+<p class="text-lg font-extrabold text-indigo-900">22</p>
+</div>
+<div class="bg-surface-container-low rounded-2xl p-3 text-center">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Attendance</p>
+<p class="text-lg font-extrabold text-secondary">100%</p>
+</div>
+<div class="bg-surface-container-low rounded-2xl p-3 text-center">
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Rating</p>
+<div class="flex items-center justify-center gap-0.5">
+<p class="text-lg font-extrabold text-indigo-900">5.0</p>
+<span class="material-symbols-outlined text-[14px] text-tertiary-fixed-dim active-icon" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 py-3 rounded-2xl font-bold text-secondary border border-outline-variant/30 hover:bg-secondary/5 transition-colors">Edit</button>
+<button class="flex-1 py-3 rounded-2xl font-bold bg-indigo-50 text-indigo-900 hover:bg-indigo-100 transition-colors">View Profile</button>
+</div>
+</div>
+<!-- Dashboard Insight (Asymmetric Card) -->
+<div class="lg:col-span-2 bg-primary-container rounded-[28px] p-8 relative overflow-hidden flex flex-col justify-center">
+<div class="relative z-10 max-w-md">
+<h4 class="text-on-primary-container text-3xl font-extrabold headline-font mb-4">Performance Insights</h4>
+<p class="text-on-primary-container/70 mb-8 font-medium leading-relaxed">Overall faculty satisfaction is up by 12% this semester. 90% of teachers have completed their grading syllabus early.</p>
+<button class="bg-white text-indigo-900 px-6 py-3 rounded-full font-bold shadow-lg hover:scale-105 transition-transform">View Reports</button>
+</div>
+<!-- Abstract Background Ornament -->
+<div class="absolute -right-10 -bottom-10 w-64 h-64 bg-secondary/20 rounded-full blur-3xl"></div>
+<div class="absolute top-0 right-0 p-8 text-on-primary-container/20">
+<span class="material-symbols-outlined text-[120px]" style="font-variation-settings: 'wght' 200;">monitoring</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button (FAB) -->
+<button class="fixed bottom-24 right-6 w-16 h-16 rounded-[24px] bg-secondary-container text-on-secondary-container shadow-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-40">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center pt-3 pb-6 px-4 bg-surface/85 backdrop-blur-md shadow-[0_-8px_32px_rgba(26,6,102,0.06)] z-50 rounded-t-[28px]">
+<div class="flex flex-col items-center justify-center text-neutral-500 px-5 py-1.5 hover:bg-neutral-100 transition-all rounded-[12px] cursor-pointer">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-inter text-[11px] font-medium tracking-wide">Dashboard</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-indigo-100 text-indigo-900 rounded-[12px] px-5 py-1.5 transition-all cursor-pointer">
+<span class="material-symbols-outlined active-icon">group</span>
+<span class="font-inter text-[11px] font-bold tracking-wide">Directory</span>
+</div>
+<div class="flex flex-col items-center justify-center text-neutral-500 px-5 py-1.5 hover:bg-neutral-100 transition-all rounded-[12px] cursor-pointer">
+<span class="material-symbols-outlined">fact_check</span>
+<span class="font-inter text-[11px] font-medium tracking-wide">Attendance</span>
+</div>
+<div class="flex flex-col items-center justify-center text-neutral-500 px-5 py-1.5 hover:bg-neutral-100 transition-all rounded-[12px] cursor-pointer">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-inter text-[11px] font-medium tracking-wide">Fees</span>
+</div>
+<div class="flex flex-col items-center justify-center text-neutral-500 px-5 py-1.5 hover:bg-neutral-100 transition-all rounded-[12px] cursor-pointer">
+<span class="material-symbols-outlined">campaign</span>
+<span class="font-inter text-[11px] font-medium tracking-wide">Notice</span>
+</div>
+</nav>
+</body></html>

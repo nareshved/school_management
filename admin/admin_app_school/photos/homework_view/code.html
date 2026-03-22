@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-fixed-dim": "#bdc2ff",
+              "tertiary-container": "#4b2600",
+              "tertiary-fixed": "#ffdcc2",
+              "outline": "#767683",
+              "on-error": "#ffffff",
+              "error-container": "#ffdad6",
+              "on-tertiary": "#ffffff",
+              "secondary-container": "#8df5e4",
+              "surface-container-highest": "#e2e2e2",
+              "on-secondary-fixed-variant": "#005048",
+              "on-secondary": "#ffffff",
+              "surface": "#f9f9f9",
+              "secondary-fixed-dim": "#70d8c8",
+              "surface-container-low": "#f3f3f3",
+              "on-surface-variant": "#454652",
+              "secondary-fixed": "#8df5e4",
+              "on-primary-container": "#8690ee",
+              "surface-variant": "#e2e2e2",
+              "outline-variant": "#c6c5d4",
+              "inverse-surface": "#2f3131",
+              "inverse-primary": "#bdc2ff",
+              "surface-bright": "#f9f9f9",
+              "secondary": "#006b5f",
+              "surface-container-lowest": "#ffffff",
+              "primary-fixed": "#e0e0ff",
+              "on-primary-fixed-variant": "#343d96",
+              "on-primary": "#ffffff",
+              "inverse-on-surface": "#f0f1f1",
+              "on-surface": "#1a1c1c",
+              "surface-tint": "#4c56af",
+              "on-tertiary-container": "#e17e00",
+              "on-primary-fixed": "#000767",
+              "primary": "#000666",
+              "on-secondary-fixed": "#00201c",
+              "background": "#f9f9f9",
+              "surface-container-high": "#e8e8e8",
+              "on-background": "#1a1c1c",
+              "tertiary-fixed-dim": "#ffb77a",
+              "surface-container": "#eeeeee",
+              "on-error-container": "#93000a",
+              "primary-container": "#1a237e",
+              "on-tertiary-fixed": "#2e1500",
+              "on-secondary-container": "#007165",
+              "tertiary": "#2d1400",
+              "surface-dim": "#dadada",
+              "on-tertiary-fixed-variant": "#6d3a00",
+              "error": "#ba1a1a"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .no-line-rule { border: none !important; }
+        .tonal-shift { transition: background-color 0.3s ease; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface font-body text-on-surface selection:bg-secondary-container">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/85 dark:bg-surface-dark/85 backdrop-blur-md shadow-[0_8px_32px_rgba(26,6,102,0.06)] h-16 flex items-center justify-between px-6">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="User profile photo avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC75QbLvHAy9N8sy6PrNAEpFWtJ77gag0HQ1C-g90FWRd-bRHC6EH4lgvd8eBoDeP93mrKN2cmzK5d5QvSNLiDZ7xq9Gce8Y4JWCyC5l6ePej4t0Bdx4zjTtfmMsVmr-37Bf9yxQvr0rcBvurpDvhmx8EM8oysp3vNJjevsheefEfNAputECmNMK3DDwXSL1NN3CD3pm0J2R16fU4XMiz2Rav2YIhbXa7c6FkH9QcBKlEQhcIflnuNY-oEgWAO4iDQ_k4sYRLSzbmD8"/>
+</div>
+<h1 class="font-headline font-extrabold text-indigo-800 tracking-tighter text-xl">The Scholastic Curator</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-indigo-50 transition-colors">
+<span class="material-symbols-outlined text-indigo-900">notifications</span>
+</button>
+</div>
+</header>
+<main class="pt-20 pb-32 px-4 max-w-5xl mx-auto">
+<!-- Welcome Hero Section -->
+<section class="mb-8">
+<p class="text-on-surface-variant font-medium text-sm mb-1">Academic Year 2024-25</p>
+<h2 class="font-headline text-3xl font-bold text-primary tracking-tight">Homework Vault</h2>
+</section>
+<!-- Custom Tab Bar -->
+<nav class="flex items-center gap-1 mb-6 bg-surface-container-low p-1.5 rounded-2xl w-fit">
+<button class="px-6 py-2.5 rounded-xl bg-surface-container-lowest text-primary font-bold shadow-sm transition-all text-sm">Pending</button>
+<button class="px-6 py-2.5 rounded-xl text-on-surface-variant font-medium hover:bg-surface-container-high transition-all text-sm">Submitted</button>
+<button class="px-6 py-2.5 rounded-xl text-on-surface-variant font-medium hover:bg-surface-container-high transition-all text-sm">All</button>
+</nav>
+<!-- Subject Filter Chips -->
+<div class="flex items-center gap-3 overflow-x-auto pb-4 mb-4 no-scrollbar">
+<button class="flex items-center gap-2 px-4 py-2 bg-secondary-container text-on-secondary-container rounded-xl font-semibold text-sm whitespace-nowrap shadow-sm">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">filter_list</span>
+                All Subjects
+            </button>
+<button class="px-4 py-2 bg-surface-container-low text-on-surface-variant rounded-xl font-medium text-sm whitespace-nowrap hover:bg-surface-container-high">Mathematics</button>
+<button class="px-4 py-2 bg-surface-container-low text-on-surface-variant rounded-xl font-medium text-sm whitespace-nowrap hover:bg-surface-container-high">Quantum Physics</button>
+<button class="px-4 py-2 bg-surface-container-low text-on-surface-variant rounded-xl font-medium text-sm whitespace-nowrap hover:bg-surface-container-high">Modern Literature</button>
+<button class="px-4 py-2 bg-surface-container-low text-on-surface-variant rounded-xl font-medium text-sm whitespace-nowrap hover:bg-surface-container-high">European History</button>
+</div>
+<!-- Homework Bento Grid / List -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Homework Card 1: Overdue/Urgent -->
+<div class="group bg-surface-container-lowest p-6 rounded-[28px] shadow-[0_8px_32px_rgba(26,6,102,0.04)] hover:shadow-[0_12px_48px_rgba(26,6,102,0.08)] transition-all flex flex-col justify-between border-l-4 border-error">
+<div>
+<div class="flex justify-between items-start mb-4">
+<span class="px-3 py-1 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-full text-[11px] font-bold uppercase tracking-wider">Mathematics</span>
+<span class="flex items-center gap-1 text-error font-bold text-xs">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">priority_high</span>
+                            Overdue
+                        </span>
+</div>
+<h3 class="font-headline text-xl font-bold text-on-surface mb-2 group-hover:text-primary transition-colors">Advanced Calculus: Partial Derivatives</h3>
+<p class="text-on-surface-variant text-sm line-clamp-2 mb-4 leading-relaxed">Complete the exercises from Chapter 4, Section 2. Focus specifically on the chain rule applications and gradient vectors.</p>
+</div>
+<div class="flex items-center justify-between pt-4 border-t border-outline-variant/15">
+<div class="flex items-center gap-2">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Teacher portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA376BQxXA6c_LEiX588Zr5Ka2jPG3i-bcH9yEToZa7saCmvx01JziW0c49bGVB0qOR7qs0ubjOuDU8ZjTplKpLZzkmE0VwCbzCr8tetAA9-5xzl7XaSSwdua4eBx2Zt2uxEU2rPYMyHKf1vu2EHGHsdG6X2sW0qToy858dpVJKhAB_GUYzcLz59231w7vyeCiOURnE65OwWTA4E2FGJRpRnhATuMFOKp8mWtKI-hYEyVk4iWbT5ncqT_ovZ1rmZGoOWZm5Ho1CPAVf"/>
+<span class="text-xs text-on-surface-variant font-medium">Prof. Aris Thorne</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-surface-variant text-lg">attachment</span>
+<button class="text-xs font-bold text-primary px-3 py-1.5 bg-primary-fixed rounded-lg hover:bg-primary hover:text-white transition-all">Submit Now</button>
+</div>
+</div>
+</div>
+<!-- Homework Card 2: Pending -->
+<div class="group bg-surface-container-lowest p-6 rounded-[28px] shadow-[0_8px_32px_rgba(26,6,102,0.04)] hover:shadow-[0_12px_48px_rgba(26,6,102,0.08)] transition-all flex flex-col justify-between border-l-4 border-secondary">
+<div>
+<div class="flex justify-between items-start mb-4">
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-container rounded-full text-[11px] font-bold uppercase tracking-wider">Literature</span>
+<span class="flex items-center gap-1 text-secondary font-bold text-xs">
+<span class="material-symbols-outlined text-sm">schedule</span>
+                            Due in 2 days
+                        </span>
+</div>
+<h3 class="font-headline text-xl font-bold text-on-surface mb-2 group-hover:text-primary transition-colors">The Modernist Movement Essay</h3>
+<p class="text-on-surface-variant text-sm line-clamp-2 mb-4 leading-relaxed">A 1,500-word analysis of Virginia Woolf's narrative techniques in 'To the Lighthouse'.</p>
+</div>
+<div class="flex items-center justify-between pt-4 border-t border-outline-variant/15">
+<div class="flex items-center gap-2">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Teacher portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9u4RYtSiB4fw0AoxdpW_iVWemTZDJrxfxZjQUtzXkpaeVVfb23oH3bzvSAY3qbmCUtmqbLB0PW8wlHFWBRM_MWBJzTnBkVf_RWOgfNsBIYESOKBL44fEhSlzm-pyVgfcJ-1bxrnkj2Wf-fPRTt3QDlXrFn_0n_49hRW9EZ0bovbaklgnq7hh2NX85qGMywgsjHBTlJa-wQhNvWew2X4IYtM0kIE2_f6xOvXs7rafbGvdXK-bIAOirkQ5OqOekrfLp77MIsSLUcMYy"/>
+<span class="text-xs text-on-surface-variant font-medium">Dr. Elena Vance</span>
+</div>
+<div class="flex items-center gap-3 text-on-surface-variant">
+<span class="material-symbols-outlined text-lg">description</span>
+<span class="material-symbols-outlined text-lg">link</span>
+</div>
+</div>
+</div>
+<!-- Homework Card 3: Pending Progress -->
+<div class="group bg-surface-container-lowest p-6 rounded-[28px] shadow-[0_8px_32px_rgba(26,6,102,0.04)] hover:shadow-[0_12px_48px_rgba(26,6,102,0.08)] transition-all border-l-4 border-primary-container">
+<div class="flex justify-between items-start mb-4">
+<span class="px-3 py-1 bg-primary-fixed text-on-primary-fixed-variant rounded-full text-[11px] font-bold uppercase tracking-wider">Physics</span>
+<span class="text-on-surface-variant font-bold text-xs uppercase tracking-tighter">Draft Saved</span>
+</div>
+<h3 class="font-headline text-xl font-bold text-on-surface mb-2">Quantum Entanglement Lab Report</h3>
+<!-- Progress Indicator -->
+<div class="mt-4 mb-6">
+<div class="flex justify-between items-center mb-2">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase">Completion Progress</span>
+<span class="text-[10px] font-bold text-primary">65%</span>
+</div>
+<div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[65%] rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center justify-between pt-4 border-t border-outline-variant/15">
+<div class="flex items-center gap-2">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Teacher portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8K9AuNkryf5myWy83RBICxi7MqRXxumfzrA5eHFLMVNs4ZKVF8TG2sFTrswuSw6YOoAqL7FqQHGgl9EulQjpyElnRZeFoB0cBVzKegNydjXqEJRUDKuxoaiNyopSNL32y7UK8XT9VCsBPppIUelugl4dT1IJZ8oNPDXJ3sxbhzBym7tfrjquRWHP4is_SH9m1BsyTz87A1TWP3M-Bk2RtxEOMKBffGeemlLjqJRJ7QJTVm_JdZUj_IvW-X01sxx-20Mg3ZKTdXxzm"/>
+<span class="text-xs text-on-surface-variant font-medium">Prof. Julian Curator</span>
+</div>
+<button class="text-xs font-bold text-on-primary px-4 py-2 bg-primary rounded-full hover:shadow-lg transition-all">Resume Work</button>
+</div>
+</div>
+<!-- Homework Card 4: History -->
+<div class="group bg-surface-container-lowest p-6 rounded-[28px] shadow-[0_8px_32px_rgba(26,6,102,0.04)] hover:shadow-[0_12px_48px_rgba(26,6,102,0.08)] transition-all flex flex-col justify-between border-l-4 border-outline-variant">
+<div>
+<div class="flex justify-between items-start mb-4">
+<span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-full text-[11px] font-bold uppercase tracking-wider">History</span>
+<span class="flex items-center gap-1 text-on-surface-variant font-medium text-xs">
+<span class="material-symbols-outlined text-sm">event</span>
+                            Oct 24, 2024
+                        </span>
+</div>
+<h3 class="font-headline text-xl font-bold text-on-surface mb-2">The Industrial Revolution Impact</h3>
+<p class="text-on-surface-variant text-sm line-clamp-2 mb-4 leading-relaxed">Analyze the socio-economic shifts in late 18th century Britain through the lens of textile manufacturing.</p>
+</div>
+<div class="flex items-center justify-between pt-4 border-t border-outline-variant/15">
+<div class="flex items-center gap-2">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="Teacher portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkwzmPxEPDHitEp4wwnysD-5O-zlpgUuapU6cmjK8Xixo5b2Aw6TeM3uIK__AaH7u6UrFNt6YIRICXUt8K_FyDJyu-9vja9mFc34NgzUTDaF4IqsqXUCVDGZ74rEk0UckWXPmDIXDd6_FuUeVsZYClcqLjia14qVOnKgsETPv3qE83uxlFyKymCGEGhTvF3Cm2HiEssdPjRYvWWXS9AAgV1yBe3O8D0NWN6F8KMwqUetGHcaW7aMoiD7FsFpbCdIQPHhfVkykM2OsX"/>
+<span class="text-xs text-on-surface-variant font-medium">Mrs. Sarah Jenkins</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-lg">folder_open</span>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center pt-3 pb-8 px-4 bg-surface/85 backdrop-blur-md shadow-[0_-8px_32px_rgba(26,6,102,0.06)] rounded-t-[28px] z-50">
+<button class="flex flex-col items-center justify-center text-neutral-500 px-5 py-1.5 active:scale-90 duration-150 transition-transform">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label text-[11px] font-medium tracking-wide mt-1">Dashboard</span>
+</button>
+<button class="flex flex-col items-center justify-center text-neutral-500 px-5 py-1.5 active:scale-90 duration-150 transition-transform">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label text-[11px] font-medium tracking-wide mt-1">Directory</span>
+</button>
+<!-- ACTIVE TAB: Homework (Semantic Mapping from Attendance/Tasks) -->
+<button class="flex flex-col items-center justify-center bg-indigo-100 text-indigo-900 rounded-[12px] px-5 py-1.5 active:scale-90 duration-150 transition-transform font-bold">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">fact_check</span>
+<span class="font-label text-[11px] font-bold tracking-wide mt-1">Attendance</span>
+</button>
+<button class="flex flex-col items-center justify-center text-neutral-500 px-5 py-1.5 active:scale-90 duration-150 transition-transform">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label text-[11px] font-medium tracking-wide mt-1">Fees</span>
+</button>
+<button class="flex flex-col items-center justify-center text-neutral-500 px-5 py-1.5 active:scale-90 duration-150 transition-transform">
+<span class="material-symbols-outlined">campaign</span>
+<span class="font-label text-[11px] font-medium tracking-wide mt-1">Notice</span>
+</button>
+</nav>
+<!-- Add Homework FAB (Floating Action Button) -->
+<button class="fixed right-6 bottom-28 w-14 h-14 bg-primary text-on-primary rounded-2xl shadow-xl flex items-center justify-center hover:scale-105 transition-transform z-40">
+<span class="material-symbols-outlined" style="font-variation-settings: 'wght' 600;">add</span>
+</button>
+</body></html>

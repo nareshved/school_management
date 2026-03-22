@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Notice Board - The Scholastic Curator</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<!-- Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary-fixed-dim": "#bdc2ff",
+              "tertiary-container": "#4b2600",
+              "tertiary-fixed": "#ffdcc2",
+              "outline": "#767683",
+              "on-error": "#ffffff",
+              "error-container": "#ffdad6",
+              "on-tertiary": "#ffffff",
+              "secondary-container": "#8df5e4",
+              "surface-container-highest": "#e2e2e2",
+              "on-secondary-fixed-variant": "#005048",
+              "on-secondary": "#ffffff",
+              "surface": "#f9f9f9",
+              "secondary-fixed-dim": "#70d8c8",
+              "surface-container-low": "#f3f3f3",
+              "on-surface-variant": "#454652",
+              "secondary-fixed": "#8df5e4",
+              "on-primary-container": "#8690ee",
+              "surface-variant": "#e2e2e2",
+              "outline-variant": "#c6c5d4",
+              "inverse-surface": "#2f3131",
+              "inverse-primary": "#bdc2ff",
+              "surface-bright": "#f9f9f9",
+              "secondary": "#006b5f",
+              "surface-container-lowest": "#ffffff",
+              "primary-fixed": "#e0e0ff",
+              "on-primary-fixed-variant": "#343d96",
+              "on-primary": "#ffffff",
+              "inverse-on-surface": "#f0f1f1",
+              "on-surface": "#1a1c1c",
+              "surface-tint": "#4c56af",
+              "on-tertiary-container": "#e17e00",
+              "on-primary-fixed": "#000767",
+              "primary": "#000666",
+              "on-secondary-fixed": "#00201c",
+              "background": "#f9f9f9",
+              "surface-container-high": "#e8e8e8",
+              "on-background": "#1a1c1c",
+              "tertiary-fixed-dim": "#ffb77a",
+              "surface-container": "#eeeeee",
+              "on-error-container": "#93000a",
+              "primary-container": "#1a237e",
+              "on-tertiary-fixed": "#2e1500",
+              "on-secondary-container": "#007165",
+              "tertiary": "#2d1400",
+              "surface-dim": "#dadada",
+              "on-tertiary-fixed-variant": "#6d3a00",
+              "error": "#ba1a1a"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .no-line-rule { border: none !important; }
+      .tonal-shift { background-color: rgba(243, 243, 243, 0.8); }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface font-body text-on-surface antialiased">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface/85 backdrop-blur-md shadow-[0_8px_32px_rgba(26,6,102,0.06)]">
+<div class="flex items-center justify-between px-6 h-16 w-full max-w-none">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center overflow-hidden">
+<img alt="User profile photo" class="w-full h-full object-cover" data-alt="Close up portrait of a senior school administrator" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlz_ZV5b3nPblJBfQ-M3Pr3f5kTz-w42YRIrXNPE3oFNLnUIHW_OO4x6QPd5hW7s_bkRpo3nihNpb6nLmBFiqe6TYxPSOSvMlaZfXBUFRaRK39pAMDpkmAJCL_lpDPl-oyhKX6t-hLH9okGan2w3TWAMPyZxhKXRLfekhmseaE8yO7lCG7kvg7RvCN2moQZwhOeqQP3q1ypRs8e37SouR059a2VKNDl550Ov15tFnr_YMwfLCB_U19o_XIFWCkvkt4bRDJsb7X88p7"/>
+</div>
+<h1 class="text-xl font-extrabold text-indigo-800 tracking-tighter font-headline">The Scholastic Curator</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-full hover:bg-indigo-50 transition-colors text-indigo-900">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</button>
+<button class="p-2 rounded-full hover:bg-indigo-50 transition-colors text-indigo-900">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+</div>
+</div>
+</header>
+<main class="pt-20 pb-28 px-4 md:px-8 max-w-4xl mx-auto">
+<!-- Section: Title & Filters -->
+<section class="mb-10">
+<div class="flex flex-col gap-6">
+<div>
+<h2 class="font-headline text-3xl font-bold tracking-tight text-primary">Notice Board</h2>
+<p class="text-on-surface-variant font-body mt-1">Stay updated with the latest campus announcements</p>
+</div>
+<!-- Filter Chips -->
+<div class="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+<button class="bg-secondary-container text-on-secondary-container px-5 py-2 rounded-xl text-sm font-medium whitespace-nowrap shadow-sm">All</button>
+<button class="bg-surface-container-low text-on-surface-variant px-5 py-2 rounded-xl text-sm font-medium whitespace-nowrap hover:bg-surface-container-high transition-colors">Important</button>
+<button class="bg-surface-container-low text-on-surface-variant px-5 py-2 rounded-xl text-sm font-medium whitespace-nowrap hover:bg-surface-container-high transition-colors">Academic</button>
+<button class="bg-surface-container-low text-on-surface-variant px-5 py-2 rounded-xl text-sm font-medium whitespace-nowrap hover:bg-surface-container-high transition-colors">Events</button>
+<button class="bg-surface-container-low text-on-surface-variant px-5 py-2 rounded-xl text-sm font-medium whitespace-nowrap hover:bg-surface-container-high transition-colors">General</button>
+</div>
+</div>
+</section>
+<!-- Notice List (Asymmetric Grid/Feed) -->
+<div class="space-y-6">
+<!-- Important Notice Card -->
+<div class="group relative bg-surface-container-lowest rounded-2xl p-6 shadow-[0_8px_32px_rgba(26,6,102,0.04)] border-l-4 border-tertiary-fixed-dim">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2">
+<span class="bg-tertiary-fixed text-on-tertiary-fixed-variant text-[10px] font-bold tracking-widest uppercase px-2 py-1 rounded-md">Urgent Action</span>
+<span class="text-xs text-on-surface-variant flex items-center gap-1 font-medium">
+<span class="material-symbols-outlined text-sm" data-icon="push_pin" style="font-variation-settings: 'FILL' 1;">push_pin</span>
+                            Pinned
+                        </span>
+</div>
+<span class="text-xs text-on-surface-variant font-medium">2 hours ago</span>
+</div>
+<h3 class="font-headline text-xl font-bold text-primary mb-2 leading-tight">Final Examination Schedule for Semester 2</h3>
+<p class="text-on-surface-variant font-body leading-relaxed mb-6 line-clamp-2">
+                    Please be advised that the final examination timetable has been officially released. All students are required to verify their seating arrangements and department-specific protocols...
+                </p>
+<div class="flex items-center justify-between mt-auto pt-4 border-t border-outline-variant/10">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center">
+<img alt="Admin Avatar" class="w-full h-full object-cover" data-alt="Portrait of a male head administrator" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWAAZO1PqZEtMajc34Fy-4RjWPp53ZEivhBH1X9wlBcU_SP93O1Oa798c8qXOFgz71DA0ByIxslIsRGqWWpwyND-tSm1kwB9qjylUEgzEI3P-WfjOfrwfNmVLaYnUmhQmuP4FOOATRetWv7lt9QHeq_Owf1TI-H8HB3-dFPFy3KWNH1Aggn_cSrXPPTJ78f0uCnN8QltfGdpOi_E5IvW6L-L_awhvkfZNRh7MQspijVYMavopaJmOYM1XQX683QgKWlupXpQeNDRFu"/>
+</div>
+<span class="text-xs font-semibold text-on-surface">Sent by Principal</span>
+</div>
+<button class="text-secondary font-bold text-sm tracking-wide flex items-center gap-1 hover:gap-2 transition-all">
+                        Read More
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Standard Notice Card -->
+<div class="bg-surface-container-lowest rounded-2xl p-6 shadow-[0_8px_32px_rgba(26,6,102,0.04)]">
+<div class="flex justify-between items-start mb-4">
+<span class="bg-secondary-fixed text-on-secondary-container text-[10px] font-bold tracking-widest uppercase px-2 py-1 rounded-md">Academic</span>
+<span class="text-xs text-on-surface-variant font-medium">Yesterday</span>
+</div>
+<h3 class="font-headline text-xl font-bold text-primary mb-2 leading-tight">New Library Resources for Research Students</h3>
+<p class="text-on-surface-variant font-body leading-relaxed mb-6">
+                    We are pleased to announce the addition of several premium digital journals and physical archives to the main library. Access is now granted to all post-graduate researchers...
+                </p>
+<div class="flex items-center justify-between mt-auto pt-4 border-t border-outline-variant/10">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center">
+<img alt="Library Head" class="w-full h-full object-cover" data-alt="Icon representing library or books" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFZvbJXnCwVKiL31Lwi5ax3gHhAbAJsRsTptsx1EFXssezOKgqeWvAEbbvv0aFN4V1Fah691ZJBtWBOJF9azpskNDPZmf4sHRr6vmnD9iemnSGUlbwL4-mtMutLkmZFO_YK0v0ROpRG6EMMDZ48zk_W1mgJmL3onK4_ZJ0DD4NfTTC3r0p6jeUiSlAreCCn6qpj5_ufD45qkbLnpKZDCZeTqfAiBVUyKX5pRoylS7McttMXlesHY3xs3TDj1VyTI-_rVMVGCTdeIfa"/>
+</div>
+<span class="text-xs font-semibold text-on-surface">Librarian Office</span>
+</div>
+<button class="text-secondary font-bold text-sm tracking-wide flex items-center gap-1 hover:gap-2 transition-all">
+                        Read More
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Notice with Image Attachment -->
+<div class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-[0_8px_32px_rgba(26,6,102,0.04)]">
+<div class="h-48 w-full bg-neutral-200">
+<img alt="Campus Event" class="w-full h-full object-cover" data-alt="Beautiful sunset over university campus building" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAa6jYHlzDySQenljvyTGWWn-ueXbsx3ZlZsw89IOQ_TplPZqaJ0p4XbtXJ-nMV2SOMlvb_93Pux9eme2oTkdLCcz_byX1IsFGmttiZy2yMHy-pnyJo16JPbYZDDOKBIXJBLiVJoJLyFQsFCcFeKtMwY0N0wHNhoG8UudkNe2dGTAwKWHDQaIzchxOsnfYmhg8-IXkw8Wqp4SLkEL6ZKv4apKQgFheJDhZv5bY24LftBIanFRxutQTvk5bKdykB6YtAeXDWRP4i20y2"/>
+</div>
+<div class="p-6">
+<div class="flex justify-between items-start mb-4">
+<span class="bg-primary-fixed text-on-primary-fixed-variant text-[10px] font-bold tracking-widest uppercase px-2 py-1 rounded-md">Events</span>
+<span class="text-xs text-on-surface-variant font-medium">Oct 24, 2023</span>
+</div>
+<h3 class="font-headline text-xl font-bold text-primary mb-2 leading-tight">Annual Cultural Symposium 2024</h3>
+<p class="text-on-surface-variant font-body leading-relaxed mb-6">
+                        Registrations are now open for the Annual Cultural Symposium. Join us for a week of intellectual discourse, artistic performances, and community building...
+                    </p>
+<div class="flex items-center justify-between mt-auto pt-4 border-t border-outline-variant/10">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center">
+<img alt="Student Council" class="w-full h-full object-cover" data-alt="Theater masks icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8e43ookRuPjML2JGI3kSPEj3WdjixVg0WnjSrJIXVHZgxbbrKvqTAAu2c1IqNO3f4_dvO7Mj_gH1miN0f6yoqMM9RZTZDF5ekK2ZjuBbQg1jDdEM5QnnZK8f8-ZyMUwmPgVVAGkIdGvy6qfAxaQk9xuQT3IC-cX8ksic9Z9tBMwDDc1dBGx9m75qbVaCKaVjGCtRZY6Q8aZuGh0rnJCAk4Go2G46-cV8F7JF1yAu8yz2Kf77D4oDRbcEgnJbCn6mIYaAkjG3139NW"/>
+</div>
+<span class="text-xs font-semibold text-on-surface">Student Council</span>
+</div>
+<button class="text-secondary font-bold text-sm tracking-wide flex items-center gap-1 hover:gap-2 transition-all">
+                            Read More
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Standard Notice Card -->
+<div class="bg-surface-container-lowest rounded-2xl p-6 shadow-[0_8px_32px_rgba(26,6,102,0.04)]">
+<div class="flex justify-between items-start mb-4">
+<span class="bg-surface-variant text-on-surface-variant text-[10px] font-bold tracking-widest uppercase px-2 py-1 rounded-md">General</span>
+<span class="text-xs text-on-surface-variant font-medium">3 days ago</span>
+</div>
+<h3 class="font-headline text-xl font-bold text-primary mb-2 leading-tight">Maintenance Update: West Wing Elevators</h3>
+<p class="text-on-surface-variant font-body leading-relaxed mb-6">
+                    Scheduled maintenance for elevators in the West Wing will take place this Saturday. Please use the East stairs for access during the hours of 8 AM to 4 PM.
+                </p>
+<div class="flex items-center justify-between mt-auto pt-4 border-t border-outline-variant/10">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center">
+<img alt="Facilities" class="w-full h-full object-cover" data-alt="Mechanical gear icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0wAti06nEcoufkIIx-EZjAIdN5eaM9Imv2VpDeWrGh0iAT773NmkDP5n2NbYYJU-glKvk9SPr4nAEhwYPgGqqZ75ahXtG5Vy5Z7f4n2Zu-7upOHbbopx0fGpVdy7j1ZaQQAuF5Lr79n8eyqdrPWo-eeVHfh4xowD3EB5iDlZms3lE5_rzoE0ALww6c-DdVoPI2wc4ZnViy--PoWAATELcr3A8YfF0QalKGOWe17vn-MlcuMP8Dqn6tpgVbzIwtCAZ0qLpbO3Rr-pE"/>
+</div>
+<span class="text-xs font-semibold text-on-surface">Facilities Dept.</span>
+</div>
+<button class="text-secondary font-bold text-sm tracking-wide flex items-center gap-1 hover:gap-2 transition-all">
+                        Read More
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center pt-3 pb-safe px-4 bg-surface/85 backdrop-blur-md rounded-t-[28px] z-50 shadow-[0_-8px_32px_rgba(26,6,102,0.06)]">
+<div class="flex flex-col items-center justify-center text-neutral-500 px-5 py-1.5 active:scale-90 transition-transform">
+<span class="material-symbols-outlined mb-1" data-icon="dashboard">dashboard</span>
+<span class="font-inter text-[11px] font-medium tracking-wide">Dashboard</span>
+</div>
+<div class="flex flex-col items-center justify-center text-neutral-500 px-5 py-1.5 active:scale-90 transition-transform">
+<span class="material-symbols-outlined mb-1" data-icon="group">group</span>
+<span class="font-inter text-[11px] font-medium tracking-wide">Directory</span>
+</div>
+<div class="flex flex-col items-center justify-center text-neutral-500 px-5 py-1.5 active:scale-90 transition-transform">
+<span class="material-symbols-outlined mb-1" data-icon="fact_check">fact_check</span>
+<span class="font-inter text-[11px] font-medium tracking-wide">Attendance</span>
+</div>
+<div class="flex flex-col items-center justify-center text-neutral-500 px-5 py-1.5 active:scale-90 transition-transform">
+<span class="material-symbols-outlined mb-1" data-icon="payments">payments</span>
+<span class="font-inter text-[11px] font-medium tracking-wide">Fees</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-indigo-100 text-indigo-900 rounded-[12px] px-5 py-1.5 active:scale-90 transition-transform">
+<span class="material-symbols-outlined mb-1" data-icon="campaign" style="font-variation-settings: 'FILL' 1;">campaign</span>
+<span class="font-inter text-[11px] font-medium tracking-wide">Notice</span>
+</div>
+</nav>
+</body></html>
