@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/constants/app_constants.dart';
 import '../../models/user_model.dart';
 import '../../services/supabase_service.dart';
 
@@ -39,13 +40,29 @@ class AuthProvider extends ChangeNotifier {
     try {
       final user = await SupabaseService.signIn(email, password);
       if (user != null) {
-        final profile = await SupabaseService.getUserProfile(user.id);
-        if (profile?.role != 'teacher') {
+        if (user.role != AppConstants.roleTeacher) {
           await SupabaseService.signOut();
           throw Exception('Access Denied: Teacher privileges required.');
         }
-        _currentUser = profile;
+        _currentUser = user;
       }
+    } catch (e) {
+      _error = e.toString();
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> signUp(String email, String password, String fullName, String role) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final user = await SupabaseService.signUp(email, password, fullName, role);
+      _currentUser = user;
     } catch (e) {
       _error = e.toString();
       rethrow;

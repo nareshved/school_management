@@ -5,6 +5,7 @@ import '../../core/theme/app_colors.dart';
 import '../../providers/auth_provider.dart';
 import '../student/student_shell.dart';
 import '../../config/auth_config.dart';
+import 'signup_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,6 +15,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController(text: AuthConfig.defaultStudentEmail);
   final _passwordController = TextEditingController(text: AuthConfig.defaultStudentPassword);
   bool _obscurePassword = true;
@@ -25,23 +27,33 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _handleLogin() async {
-    final email = _emailController.text.trim();
-    final password = _passwordController.text;
+  Future<void> _handleLogin() async {
+    if (!_formKey.currentState!.validate()) return;
 
-    if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter email and password'), backgroundColor: AppColors.error),
-      );
-      return;
-    }
+    final authProvider = context.read<AuthProvider>();
 
     try {
-      await context.read<AuthProvider>().login(email, password);
-      if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const StudentShell()),
-        );
+      await authProvider.login(
+        _emailController.text.trim(),
+        _passwordController.text,
+      );
+
+      final user = authProvider.currentUser;
+      if (user != null && mounted) {
+        if (user.role == 'student') {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (_) => const StudentShell()),
+            (route) => false,
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Access Denied. Student account required.'),
+              backgroundColor: AppColors.error,
+            ),
+          );
+          await authProvider.logout();
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -61,7 +73,9 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 48.h),
-          child: Column(
+          child: Form(
+            key: _formKey,
+            child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Logo space
@@ -118,6 +132,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   labelText: 'Email Address',
                   prefixIcon: Icon(Icons.email_outlined),
                 ),
+                validator: (val) {
+                  if (val == null || val.isEmpty || !val.contains('@')) {
+                    return 'Enter a valid email';
+                  }
+                  return null;
+                },
               ),
               SizedBox(height: 20.h),
 
@@ -137,6 +157,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                   ),
                 ),
+                validator: (val) {
+                  if (val == null || val.length < 6) return 'Minimum 6 characters';
+                  return null;
+                },
               ),
               SizedBox(height: 12.h),
 
@@ -185,7 +209,33 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                 ),
               ),
+              SizedBox(height: 24.h),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Don't have an account? ",
+                    style: TextStyle(color: AppColors.onSurfaceVariant, fontSize: 14.sp),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const SignupScreen()),
+                      );
+                    },
+                    child: Text(
+                      'Sign Up',
+                      style: TextStyle(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14.sp,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ],
+            ),
           ),
         ),
       ),

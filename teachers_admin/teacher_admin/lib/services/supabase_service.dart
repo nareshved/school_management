@@ -20,6 +20,47 @@ class SupabaseService {
     return null;
   }
 
+  static Future<UserModel?> signUp(String email, String password, String fullName, String role) async {
+    final response = await _client.auth.signUp(
+      email: email,
+      password: password,
+      data: {'full_name': fullName},
+    );
+    
+    if (response.user != null) {
+      final user = UserModel(
+        id: response.user!.id,
+        email: email,
+        fullName: fullName,
+        role: role,
+        createdAt: DateTime.now(),
+      );
+      await createUserProfile(user);
+      
+      try {
+        if (role == 'student') {
+          await _client.from('students').insert({
+            'user_id': user.id,
+            'full_name': user.fullName,
+            'is_active': true,
+          });
+        } else if (role == 'teacher') {
+          await _client.from('teachers').insert({
+            'user_id': user.id,
+            'full_name': user.fullName,
+            'email': user.email,
+            'is_active': true,
+          });
+        }
+      } catch (e) {
+        print('Error creating role-specific profile: $e');
+      }
+
+      return user;
+    }
+    return null;
+  }
+
   static Future<void> signOut() async {
     await _client.auth.signOut();
   }

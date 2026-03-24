@@ -1,55 +1,48 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../../config/auth_config.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/theme/app_colors.dart';
 import '../../providers/auth_provider.dart';
-import '../admin/admin_shell.dart';
-import 'signup_screen.dart';
+import 'login_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class SignupScreen extends StatefulWidget {
+  const SignupScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SignupScreen> createState() => _SignupScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignupScreenState extends State<SignupScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController(text: AuthConfig.defaultAdminEmail);
-  final _passwordController = TextEditingController(text: AuthConfig.defaultAdminPassword);
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
 
-  Future<void> _handleLogin() async {
+  Future<void> _handleSignup() async {
     if (!_formKey.currentState!.validate()) return;
     
-    // AuthProvider manages loading state
     final authProvider = context.read<AuthProvider>();
     
     try {
-      await authProvider.login(
+      await authProvider.signUp(
         _emailController.text.trim(),
         _passwordController.text,
-        AppConstants.roleAdmin, // Hardcode role to admin for this PRD
+        _nameController.text.trim(),
+        AppConstants.roleAdmin,
       );
 
-      final user = authProvider.currentUser;
-      if (user != null && mounted) {
-        // App is exclusively Admin
-        if (user.role == AppConstants.roleAdmin) {
-          Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (_) => const AdminShell()),
-            (route) => false,
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Access Denied. Admin privileges required.'),
-              backgroundColor: AppColors.error,
-            ),
-          );
-          await authProvider.logout();
-        }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Registration successful! Please sign in.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+          (route) => false,
+        );
       }
     } catch (e) {
       if (mounted) {
@@ -65,6 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -76,47 +70,55 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.surface,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: AppColors.onSurface),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.all(24.w),
+          padding: EdgeInsets.symmetric(horizontal: 24.w),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 64.h),
-                Center(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(24.r),
-                    child: Image.asset(
-                      'assets/images/logo.png',
-                      width: 120.w,
-                      height: 120.w,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 32.h),
+                SizedBox(height: 16.h),
                 Text(
-                  'Admin Portal',
+                  'Create Admin Account',
                   style: Theme.of(context).textTheme.displaySmall?.copyWith(
                         fontWeight: FontWeight.bold,
-                        fontSize: 32.sp,
+                        fontSize: 28.sp,
                       ),
                 ),
                 SizedBox(height: 8.h),
                 Text(
-                  'Sign in to manage the school',
+                  'Join the school management system',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: AppColors.onSurfaceVariant,
                         fontSize: 16.sp,
                       ),
                 ),
-                SizedBox(height: 48.h),
+                SizedBox(height: 40.h),
+                TextFormField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Full Name',
+                    prefixIcon: Icon(Icons.person_outline),
+                  ),
+                  validator: (val) {
+                    if (val == null || val.isEmpty) return 'Enter your name';
+                    return null;
+                  },
+                ),
+                SizedBox(height: 20.h),
                 TextFormField(
                   controller: _emailController,
                   decoration: const InputDecoration(
-                    labelText: 'Admin Email',
+                    labelText: 'Email Address',
                     prefixIcon: Icon(Icons.email_outlined),
                   ),
                   keyboardType: TextInputType.emailAddress,
@@ -127,7 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     return null;
                   },
                 ),
-                SizedBox(height: 24.h),
+                SizedBox(height: 20.h),
                 TextFormField(
                   controller: _passwordController,
                   decoration: const InputDecoration(
@@ -140,23 +142,18 @@ class _LoginScreenState extends State<LoginScreen> {
                     return null;
                   },
                 ),
-                SizedBox(height: 16.h),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                     onPressed: () {},
-                     child: Text('Forgot Password?', style: TextStyle(fontSize: 14.sp)),
-                  ),
-                ),
-                SizedBox(height: 32.h),
+                SizedBox(height: 40.h),
                 SizedBox(
                   width: double.infinity,
                   height: 56.h,
                   child: ElevatedButton(
-                    onPressed: isLoading ? null : _handleLogin,
+                    onPressed: isLoading ? null : _handleSignup,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
                     ),
                     child: isLoading
                         ? SizedBox(
@@ -167,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               strokeWidth: 2,
                             ),
                           )
-                        : Text('Sign In', style: TextStyle(fontSize: 16.sp)),
+                        : Text('Sign Up', style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold)),
                   ),
                 ),
                 SizedBox(height: 24.h),
@@ -175,17 +172,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Don't have an account? ",
+                      'Already have an account? ',
                       style: TextStyle(color: AppColors.onSurfaceVariant, fontSize: 14.sp),
                     ),
                     TextButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => const SignupScreen()),
-                        );
-                      },
+                      onPressed: () => Navigator.pop(context),
                       child: Text(
-                        'Sign Up',
+                        'Login',
                         style: TextStyle(
                           color: AppColors.primary,
                           fontWeight: FontWeight.bold,

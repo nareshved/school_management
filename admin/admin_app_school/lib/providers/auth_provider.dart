@@ -39,13 +39,29 @@ class AuthProvider extends ChangeNotifier {
     try {
       final user = await SupabaseService.signIn(email, password);
       if (user != null) {
-        final profile = await SupabaseService.getUserProfile(user.id);
-        if (profile?.role != selectedRole) {
+        if (user.role != selectedRole) {
           await SupabaseService.signOut();
           throw Exception('Unauthorized: Invalid role selection.');
         }
-        _currentUser = profile;
+        _currentUser = user;
       }
+    } catch (e) {
+      _error = e.toString();
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> signUp(String email, String password, String fullName, String role) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final user = await SupabaseService.signUp(email, password, fullName, role);
+      _currentUser = user;
     } catch (e) {
       _error = e.toString();
       rethrow;

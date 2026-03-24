@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../config/app_config.dart';
+import '../../core/constants/app_constants.dart';
 import '../models/user_model.dart';
 import '../models/student_model.dart';
 import '../services/supabase_service.dart';
@@ -33,7 +33,7 @@ class AuthProvider extends ChangeNotifier {
       final userId = Supabase.instance.client.auth.currentUser?.id;
       if (userId == null) return;
       _currentUser = await SupabaseService.getUserProfile(userId);
-      if (_currentUser?.role == AppRole.student.name) {
+      if (_currentUser?.role == AppConstants.roleStudent) {
         // Fetch student details from students table
         final studentData = await Supabase.instance.client
             .from('students')
@@ -62,7 +62,7 @@ class AuthProvider extends ChangeNotifier {
 
       await _loadUserRole();
 
-      if (_currentUser?.role != AppRole.student.name) {
+      if (_currentUser?.role != AppConstants.roleStudent) {
         await Supabase.instance.client.auth.signOut();
         _currentUser = null;
         _currentStudent = null;
@@ -72,6 +72,21 @@ class AuthProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
       rethrow;
+    }
+  }
+
+  Future<void> signUp(String email, String password, String fullName, String role) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final user = await SupabaseService.signUp(email, password, fullName, role);
+      _currentUser = user;
+    } catch (e) {
+      rethrow;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
   }
 
