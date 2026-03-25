@@ -18,8 +18,12 @@ class StudentShell extends StatefulWidget {
 class _StudentShellState extends State<StudentShell> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = [
-    const StudentDashboardScreen(),
+  void _switchTab(int index) {
+    setState(() => _currentIndex = index);
+  }
+
+  List<Widget> get _screens => [
+    StudentDashboardScreen(onNavigate: _switchTab),
     const AttendanceView(),
     const HomeworkView(),
     const FeesScreen(),

@@ -52,7 +52,7 @@ class StudentModel {
     return StudentModel(
       id: json['id'] as String?,
       userId: json['user_id'] as String?,
-      fullName: json['full_name'] as String,
+      fullName: json['full_name'] as String? ?? 'Student Name',
       classId: json['class_id'] as String?,
       className: classData is Map ? classData['name'] as String? : null,
       section: classData is Map ? classData['section'] as String? : null,
@@ -72,7 +72,7 @@ class StudentModel {
       avatarUrl: json['avatar_url'] as String?,
       isActive: json['is_active'] as bool? ?? true,
       createdAt: json['created_at'] != null
-          ? DateTime.parse(json['created_at'] as String)
+          ? DateTime.tryParse(json['created_at'] as String)
           : null,
     );
   }

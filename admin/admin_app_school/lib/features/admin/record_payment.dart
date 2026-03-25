@@ -44,6 +44,7 @@ class _RecordPaymentScreenState extends State<RecordPaymentScreen> {
     final fee = FeeModel(
       studentId: _selectedStudentId!,
       amount: double.parse(_amountCtrl.text.trim()),
+      feeType: _selectedFeeType,
       status: _status,
       dueDate: _dueDate,
       paidDate: _status == 'paid' ? DateTime.now() : null,

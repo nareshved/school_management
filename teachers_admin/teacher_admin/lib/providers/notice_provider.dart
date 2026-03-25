@@ -13,9 +13,21 @@ class NoticeProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
-      _notices = await SupabaseService.getNotices();
+      final userId = SupabaseService.currentUserId;
+      if (userId == null) {
+        _notices = await SupabaseService.getNotices(); // Fallback
+      } else {
+        // Fetch classes to filter notices
+        final classes = await SupabaseService.getTeacherClasses(userId);
+        final classIds = classes.map((e) => e['id'].toString()).toList();
+        
+        _notices = await SupabaseService.getNotices(
+          classIds: classIds,
+          teacherId: userId,
+        );
+      }
     } catch (e) {
-      // Log
+      debugPrint('Error loading notices: $e');
     } finally {
       _isLoading = false;
       notifyListeners();

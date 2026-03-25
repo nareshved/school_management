@@ -74,8 +74,8 @@ class AttendanceProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final allStudents = await SupabaseService.getStudents();
-      _students = allStudents.where((s) => s.classId == _selectedClassId).toList();
+      final students = await SupabaseService.getStudents(classId: _selectedClassId);
+      _students = students;
       
       final dateStr = DateFormat('yyyy-MM-dd').format(_selectedDate);
       final records = await SupabaseService.getAttendance(classId: _selectedClassId!, date: dateStr);

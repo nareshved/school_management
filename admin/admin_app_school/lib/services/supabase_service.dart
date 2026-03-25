@@ -184,8 +184,30 @@ class SupabaseService {
     await _logActivity('Teacher Added', '${teacher.fullName} joined faculty');
   }
 
+  static Future<String> addTeacherReturning(TeacherModel teacher) async {
+    final data = await _client
+        .from('teachers')
+        .insert(teacher.toJson())
+        .select('id')
+        .single();
+    await _logActivity('Teacher Added', '${teacher.fullName} joined faculty');
+    return data['id'] as String;
+  }
+
+  static Future<void> clearTeacherClasses(String teacherId) async {
+    await _client
+        .from('teacher_classes')
+        .delete()
+        .eq('teacher_id', teacherId);
+  }
+
   static Future<void> updateTeacher(String id, TeacherModel teacher) async {
     await _client.from('teachers').update(teacher.toJson()).eq('id', id);
+  }
+
+  static Future<void> deleteTeacher(String id) async {
+    await _client.from('teachers').update({'is_active': false}).eq('id', id);
+    await _logActivity('Teacher Removed', 'Teacher deactivated from system');
   }
 
   static Future<void> assignTeacherClass(
@@ -194,6 +216,25 @@ class SupabaseService {
       'teacher_id': teacherId,
       'class_id': classId,
     });
+  }
+
+  static Future<void> assignTeacherClassesBulk(
+      String teacherId, List<String> classIds) async {
+    if (classIds.isEmpty) return;
+    final records = classIds.map((cid) => {
+      'teacher_id': teacherId,
+      'class_id': cid,
+    }).toList();
+    await _client.from('teacher_classes').insert(records);
+  }
+
+  static Future<void> removeTeacherClass(
+      String teacherId, String classId) async {
+    await _client
+        .from('teacher_classes')
+        .delete()
+        .eq('teacher_id', teacherId)
+        .eq('class_id', classId);
   }
 
   // ── Fees ──────────────────────────────────────────────

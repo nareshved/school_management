@@ -32,15 +32,48 @@ class AuthProvider extends ChangeNotifier {
     try {
       final userId = Supabase.instance.client.auth.currentUser?.id;
       if (userId == null) return;
+      
       _currentUser = await SupabaseService.getUserProfile(userId);
+      
+      // If user profile is missing but we have an auth user, create one
+      if (_currentUser == null) {
+        final authUser = Supabase.instance.client.auth.currentUser;
+        if (authUser != null) {
+          _currentUser = UserModel(
+            id: authUser.id,
+            email: authUser.email ?? '',
+            fullName: authUser.userMetadata?['full_name'] ?? 'Student',
+            role: AppConstants.roleStudent,
+          );
+          await SupabaseService.createUserProfile(_currentUser!);
+        }
+      }
+
       if (_currentUser?.role == AppConstants.roleStudent) {
-        // Fetch student details from students table
+        // Fetch student details from students table using maybeSingle() to avoid exception
         final studentData = await Supabase.instance.client
             .from('students')
-            .select()
+            .select('*, classes(name, section)')
             .eq('user_id', _currentUser!.id)
-            .single();
-        _currentStudent = StudentModel.fromJson(studentData);
+            .maybeSingle();
+
+        if (studentData != null) {
+          _currentStudent = StudentModel.fromJson(studentData);
+        } else {
+          // Missing student record - create one to allow the app to function
+          final newStudentMap = {
+            'user_id': _currentUser!.id,
+            'full_name': _currentUser!.fullName,
+            'is_active': true,
+          };
+          
+          final inserted = await Supabase.instance.client
+              .from('students')
+              .insert(newStudentMap)
+              .select('*, classes(name, section)')
+              .single();
+          _currentStudent = StudentModel.fromJson(inserted);
+        }
       }
     } catch (e) {
       debugPrint('Error loading role: $e');

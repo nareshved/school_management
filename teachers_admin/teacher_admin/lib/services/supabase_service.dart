@@ -65,6 +65,8 @@ class SupabaseService {
     await _client.auth.signOut();
   }
 
+  static User? get currentUser => _client.auth.currentUser;
+
   static String? get currentUserId => _client.auth.currentUser?.id;
 
   static Future<UserModel?> getUserProfile(String userId) async {
@@ -118,11 +120,25 @@ class SupabaseService {
     return List<Map<String, dynamic>>.from(data);
   }
 
-  static Future<List<Map<String, dynamic>>> getTeacherClasses(String teacherId) async {
+  static Future<Map<String, dynamic>?> getTeacherProfileByUserId(String userId) async {
+    return await _client
+        .from('teachers')
+        .select('*, subjects(name)')
+        .eq('user_id', userId)
+        .maybeSingle();
+  }
+
+  static Future<List<Map<String, dynamic>>> getTeacherClasses(String userId) async {
+    final teacher = await _client.from('teachers').select('id').eq('user_id', userId).maybeSingle();
+    
+    if (teacher == null) return [];
+    
+    final realTeacherId = teacher['id'].toString();
+    
     final data = await _client
         .from('teacher_classes')
         .select('classes(*)')
-        .eq('teacher_id', teacherId);
+        .eq('teacher_id', realTeacherId);
     return data.map<Map<String, dynamic>>((e) => e['classes'] as Map<String, dynamic>).toList();
   }
 
@@ -151,6 +167,17 @@ class SupabaseService {
 
     final data = await query;
     return data.map((json) => StudentModel.fromJson(json)).toList();
+  }
+
+  static Future<List<StudentModel>> getStudentsByClassIds(List<String> classIds) async {
+    if (classIds.isEmpty) return [];
+    final data = await _client
+        .from('students')
+        .select('*, classes(name, section)')
+        .filter('class_id', 'in', classIds)
+        .eq('is_active', true)
+        .order('full_name');
+    return (data as List).map((json) => StudentModel.fromJson(json)).toList();
   }
 
   static Future<StudentModel> getStudent(String id) async {
@@ -251,22 +278,13 @@ class SupabaseService {
     var query = _client.from('attendance').select('*, students(full_name, roll_number)');
 
     if (studentId != null) {
-      query = _client
-          .from('attendance')
-          .select('*, students(full_name, roll_number)')
-          .eq('student_id', studentId);
+      query = query.eq('student_id', studentId);
     }
     if (classId != null) {
-      query = _client
-          .from('attendance')
-          .select('*, students(full_name, roll_number)')
-          .eq('class_id', classId);
+      query = query.eq('class_id', classId);
     }
     if (date != null) {
-      query = _client
-          .from('attendance')
-          .select('*, students(full_name, roll_number)')
-          .eq('date', date);
+      query = query.eq('date', date);
     }
 
     final data = await query.order('created_at', ascending: false);
@@ -274,24 +292,26 @@ class SupabaseService {
   }
 
   // ── Notices ──────────────────────────────────────────────
-  static Future<List<NoticeModel>> getNotices({String? category}) async {
-    var query = _client
-        .from('notices')
-        .select('*, users(full_name)')
-        .order('is_pinned', ascending: false)
-        .order('created_at', ascending: false);
-
-    if (category != null) {
-      query = _client
-          .from('notices')
-          .select('*, users(full_name)')
-          .eq('category', category)
-          .order('is_pinned', ascending: false)
-          .order('created_at', ascending: false);
+  static Future<List<NoticeModel>> getNotices({List<String>? classIds, String? teacherId}) async {
+    var query = _client.from('notices').select('*, users(full_name)');
+    
+    if (classIds != null && classIds.isNotEmpty || teacherId != null) {
+      final filters = <String>[];
+      if (classIds != null && classIds.isNotEmpty) {
+        filters.add('target_class_id.in.(${classIds.join(",")})');
+        filters.add('target_type.eq.all');
+      }
+      if (teacherId != null) {
+        filters.add('created_by.eq.$teacherId');
+      }
+      
+      if (filters.isNotEmpty) {
+        query = query.or(filters.join(','));
+      }
     }
 
-    final data = await query;
-    return data.map((json) => NoticeModel.fromJson(json)).toList();
+    final data = await query.order('created_at', ascending: false);
+    return (data as List).map((json) => NoticeModel.fromJson(json)).toList();
   }
 
   static Future<void> addNotice(NoticeModel notice) async {
@@ -306,11 +326,7 @@ class SupabaseService {
         '*, subjects(name), classes(name, section), teachers(full_name)');
 
     if (classId != null) {
-      query = _client
-          .from('homework')
-          .select(
-              '*, subjects(name), classes(name, section), teachers(full_name)')
-          .eq('class_id', classId);
+      query = query.eq('class_id', classId);
     }
 
     final data = await query.order('created_at', ascending: false);
@@ -319,6 +335,14 @@ class SupabaseService {
 
   static Future<void> addHomework(Map<String, dynamic> homework) async {
     await _client.from('homework').insert(homework);
+  }
+
+  static Future<void> updateHomework(String id, Map<String, dynamic> homework) async {
+    await _client.from('homework').update(homework).eq('id', id);
+  }
+
+  static Future<void> deleteHomework(String id) async {
+    await _client.from('homework').delete().eq('id', id);
   }
 
   // ── Activity Log ──────────────────────────────────────────────

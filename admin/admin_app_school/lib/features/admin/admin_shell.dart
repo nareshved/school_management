@@ -4,7 +4,7 @@ import '../../core/theme/app_colors.dart';
 
 import 'dashboard_screen.dart';
 import 'student_management.dart';
-
+import 'teacher_management.dart';
 import 'fees_screen.dart';
 import 'notice_screen.dart';
 import 'admin_attendance_screen.dart';
@@ -19,9 +19,14 @@ class AdminShell extends StatefulWidget {
 class _AdminShellState extends State<AdminShell> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = [
-    const DashboardScreen(),
+  void _switchTab(int index) {
+    setState(() => _currentIndex = index);
+  }
+
+  List<Widget> get _screens => [
+    DashboardScreen(onNavigate: _switchTab),
     const StudentManagementScreen(),
+    const TeacherManagementScreen(),
     const AdminAttendanceScreen(),
     const FeesScreen(),
     const NoticeScreen(),
@@ -65,7 +70,12 @@ class _AdminShellState extends State<AdminShell> {
               BottomNavigationBarItem(
                 icon: Icon(CupertinoIcons.person_2),
                 activeIcon: Icon(CupertinoIcons.person_2_fill),
-                label: 'Directory',
+                label: 'Students',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(CupertinoIcons.briefcase),
+                activeIcon: Icon(CupertinoIcons.briefcase_fill),
+                label: 'Teachers',
               ),
               BottomNavigationBarItem(
                 icon: Icon(CupertinoIcons.calendar_today),

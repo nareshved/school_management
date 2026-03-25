@@ -5,8 +5,6 @@ import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
 import '../../providers/homework_provider.dart';
 import '../../widgets/custom_card.dart';
-
-// We'll actually modify HomeworkProvider to fetch all teacher's homework if classId is null.
 import '../../services/supabase_service.dart';
 
 class HomeworkScreen extends StatefulWidget {
@@ -28,20 +26,29 @@ class _HomeworkScreenState extends State<HomeworkScreen> {
   }
 
   Future<void> _loadClasses() async {
-    final tid = SupabaseService.currentUserId;
-    if (tid != null) {
-      final classes = await SupabaseService.getTeacherClasses(tid);
+    try {
+      final tid = SupabaseService.currentUserId;
+      if (tid != null) {
+        final classes = await SupabaseService.getTeacherClasses(tid);
+        if (mounted) {
+          setState(() {
+            _classes = classes;
+            if (_classes.isNotEmpty) {
+              _selectedClassId = _classes.first['id'].toString();
+            }
+          });
+          if (_selectedClassId != null) {
+            context.read<HomeworkProvider>().loadHomework(_selectedClassId!);
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('Error loading classes: $e');
+    } finally {
       if (mounted) {
         setState(() {
-          _classes = classes;
-          if (_classes.isNotEmpty) {
-            _selectedClassId = _classes.first['id'].toString();
-          }
           _isLoadingClasses = false;
         });
-        if (_selectedClassId != null) {
-          context.read<HomeworkProvider>().loadHomework(_selectedClassId!);
-        }
       }
     }
   }
@@ -87,16 +94,17 @@ class _HomeworkScreenState extends State<HomeworkScreen> {
                                               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.sp),
                                             ),
                                           ),
-                                          Container(
-                                            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
-                                            decoration: BoxDecoration(
-                                              color: AppColors.errorContainer,
-                                              borderRadius: BorderRadius.circular(8.r),
-                                            ),
-                                            child: Text(
-                                              'Due: $dateStr',
-                                              style: TextStyle(color: AppColors.error, fontSize: 12.sp, fontWeight: FontWeight.bold),
-                                            ),
+                                          Row(
+                                            children: [
+                                              IconButton(
+                                                icon: Icon(Icons.edit_outlined, size: 20.w, color: AppColors.primary),
+                                                onPressed: () => _showAddHomeworkDialog(context, editHomework: hw),
+                                              ),
+                                              IconButton(
+                                                icon: Icon(Icons.delete_outline, size: 20.w, color: AppColors.error),
+                                                onPressed: () => _handleDelete(provider, hw['id'].toString()),
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       ),
@@ -104,6 +112,18 @@ class _HomeworkScreenState extends State<HomeworkScreen> {
                                       Text(
                                         hw['description'] ?? '',
                                         style: TextStyle(color: AppColors.onSurfaceVariant, fontSize: 14.sp),
+                                      ),
+                                      SizedBox(height: 8.h),
+                                      Container(
+                                        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                                        decoration: BoxDecoration(
+                                          color: AppColors.errorContainer,
+                                          borderRadius: BorderRadius.circular(8.r),
+                                        ),
+                                        child: Text(
+                                          'Due: $dateStr',
+                                          style: TextStyle(color: AppColors.error, fontSize: 12.sp, fontWeight: FontWeight.bold),
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -123,6 +143,38 @@ class _HomeworkScreenState extends State<HomeworkScreen> {
             )
           : null,
     );
+  }
+
+  void _handleDelete(HomeworkProvider provider, String id) async {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Homework'),
+        content: const Text('Are you sure you want to delete this homework?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && _selectedClassId != null) {
+      try {
+        await provider.deleteHomework(id, _selectedClassId!);
+        scaffoldMessenger.showSnackBar(
+          const SnackBar(content: Text('Homework deleted successfully'), backgroundColor: AppColors.success),
+        );
+      } catch (e) {
+        scaffoldMessenger.showSnackBar(
+          SnackBar(content: Text('Failed to delete: $e'), backgroundColor: AppColors.error),
+        );
+      }
+    }
   }
 
   Widget _buildClassSelector() {
@@ -171,10 +223,12 @@ class _HomeworkScreenState extends State<HomeworkScreen> {
     );
   }
 
-  void _showAddHomeworkDialog(BuildContext context) {
-    final titleCtrl = TextEditingController();
-    final descCtrl = TextEditingController();
-    DateTime? selectedDate = DateTime.now().add(const Duration(days: 1));
+  void _showAddHomeworkDialog(BuildContext context, {Map<String, dynamic>? editHomework}) {
+    final titleCtrl = TextEditingController(text: editHomework?['title']);
+    final descCtrl = TextEditingController(text: editHomework?['description']);
+    DateTime? selectedDate = editHomework != null 
+        ? DateTime.tryParse(editHomework['due_date'] ?? '') ?? DateTime.now().add(const Duration(days: 1))
+        : DateTime.now().add(const Duration(days: 1));
 
     showModalBottomSheet(
       context: context,
@@ -195,7 +249,8 @@ class _HomeworkScreenState extends State<HomeworkScreen> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Assign Homework', style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 20.sp)),
+                  Text(editHomework != null ? 'Edit Homework' : 'Assign Homework', 
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 20.sp)),
                   SizedBox(height: 24.h),
                   TextField(
                     controller: titleCtrl,
@@ -220,7 +275,7 @@ class _HomeworkScreenState extends State<HomeworkScreen> {
                       final date = await showDatePicker(
                         context: context,
                         initialDate: selectedDate!,
-                        firstDate: DateTime.now(),
+                        firstDate: DateTime.now().subtract(const Duration(days: 30)),
                         lastDate: DateTime.now().add(const Duration(days: 365)),
                       );
                       if (date != null) {
@@ -237,24 +292,36 @@ class _HomeworkScreenState extends State<HomeworkScreen> {
                         if (titleCtrl.text.isEmpty || descCtrl.text.isEmpty) return;
                         
                         final provider = context.read<HomeworkProvider>();
-                        
-                        // Use the currently selected class's subject_id
                         final classData = _classes.firstWhere((c) => c['id'].toString() == _selectedClassId);
                         final subjectId = classData['subject_id']?.toString() ?? 'unknown';
 
                         final sm = ScaffoldMessenger.of(context);
                         try {
-                          Navigator.pop(context);
-                          await provider.addHomework(
-                            titleCtrl.text,
-                            descCtrl.text,
-                            selectedDate!.toIso8601String().split('T')[0],
-                            _selectedClassId!,
-                            subjectId,
-                          );
-                          sm.showSnackBar(
-                            const SnackBar(content: Text('Homework assigned!'), backgroundColor: AppColors.success),
-                          );
+                          if (editHomework != null) {
+                            await provider.updateHomework(
+                              editHomework['id'].toString(),
+                              titleCtrl.text,
+                              descCtrl.text,
+                              selectedDate!.toIso8601String().split('T')[0],
+                              _selectedClassId!,
+                              subjectId,
+                            );
+                            sm.showSnackBar(
+                              const SnackBar(content: Text('Homework updated!'), backgroundColor: AppColors.success),
+                            );
+                          } else {
+                            await provider.addHomework(
+                              titleCtrl.text,
+                              descCtrl.text,
+                              selectedDate!.toIso8601String().split('T')[0],
+                              _selectedClassId!,
+                              subjectId,
+                            );
+                            sm.showSnackBar(
+                              const SnackBar(content: Text('Homework assigned!'), backgroundColor: AppColors.success),
+                            );
+                          }
+                          if (mounted) Navigator.pop(context);
                         } catch (e) {
                           sm.showSnackBar(
                             SnackBar(content: Text('Failed: $e'), backgroundColor: AppColors.error),
@@ -265,7 +332,7 @@ class _HomeworkScreenState extends State<HomeworkScreen> {
                         backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
                       ),
-                      child: Text('Publish Homework', style: TextStyle(fontSize: 16.sp)),
+                      child: Text(editHomework != null ? 'Update' : 'Publish', style: TextStyle(fontSize: 16.sp)),
                     ),
                   ),
                   SizedBox(height: 24.h),

@@ -319,6 +319,27 @@ class SupabaseService {
     await _client.from('homework').insert(homework);
   }
 
+  // ── Homework Submissions ──────────────────────────────────────
+  static Future<List<Map<String, dynamic>>> getHomeworkSubmissions(
+      String studentId) async {
+    final data = await _client
+        .from('homework_submissions')
+        .select()
+        .eq('student_id', studentId);
+    return List<Map<String, dynamic>>.from(data);
+  }
+
+  static Future<void> markHomeworkAsDone(
+      String studentId, String homeworkId) async {
+    await _client.from('homework_submissions').upsert({
+      'student_id': studentId,
+      'homework_id': homeworkId,
+      'status': 'completed',
+      'submitted_at': DateTime.now().toIso8601String(),
+    });
+    await _logActivity('Homework Completed', 'Marked homework as done');
+  }
+
   // ── Activity Log ──────────────────────────────────────────────
   static Future<List<Map<String, dynamic>>> getRecentActivities(
       {int limit = 10}) async {

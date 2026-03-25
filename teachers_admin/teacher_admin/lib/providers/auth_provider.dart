@@ -23,6 +23,21 @@ class AuthProvider extends ChangeNotifier {
       final userId = SupabaseService.currentUserId;
       if (userId != null) {
         _currentUser = await SupabaseService.getUserProfile(userId);
+        
+        // Handle missing profile if auth user exists
+        if (_currentUser == null) {
+          final authUser = SupabaseService.currentUser;
+          if (authUser != null) {
+            _currentUser = UserModel(
+              id: authUser.id,
+              email: authUser.email ?? '',
+              fullName: authUser.userMetadata?['full_name'] ?? 'Teacher',
+              role: AppConstants.roleTeacher,
+              createdAt: DateTime.now(),
+            );
+            await SupabaseService.createUserProfile(_currentUser!);
+          }
+        }
       }
     } catch (e) {
       _error = e.toString();
@@ -39,7 +54,23 @@ class AuthProvider extends ChangeNotifier {
 
     try {
       final user = await SupabaseService.signIn(email, password);
-      if (user != null) {
+      // If auth successful but no profile record, create one
+      if (user == null) {
+        final authUser = SupabaseService.currentUser;
+        if (authUser != null) {
+          final newUser = UserModel(
+            id: authUser.id,
+            email: email,
+            fullName: authUser.userMetadata?['full_name'] ?? 'Teacher',
+            role: AppConstants.roleTeacher,
+            createdAt: DateTime.now(),
+          );
+          await SupabaseService.createUserProfile(newUser);
+          _currentUser = newUser;
+        } else {
+          throw Exception('Login failed: User not found.');
+        }
+      } else {
         if (user.role != AppConstants.roleTeacher) {
           await SupabaseService.signOut();
           throw Exception('Access Denied: Teacher privileges required.');

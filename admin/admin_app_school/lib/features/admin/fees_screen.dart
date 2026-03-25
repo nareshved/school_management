@@ -256,12 +256,12 @@ class _FeesScreenState extends State<FeesScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  fee.studentName,
+                  fee.displayName,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, fontSize: 16.sp),
                 ),
                 SizedBox(height: 4.h),
                 Text(
-                  '${fee.studentClass} • Roll ${fee.studentRoll}',
+                  '${fee.displayClass} • Roll ${fee.studentRoll ?? "-"}',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.onSurfaceVariant, fontSize: 12.sp),
                 ),
               ],

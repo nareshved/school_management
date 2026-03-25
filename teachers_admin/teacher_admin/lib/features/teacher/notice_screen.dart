@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
 import '../../providers/notice_provider.dart';
 import '../../widgets/custom_card.dart';
 import '../../widgets/filter_chips.dart';
 import '../../models/notice_model.dart';
+import '../../services/supabase_service.dart';
 
 class NoticeScreen extends StatefulWidget {
   const NoticeScreen({super.key});
@@ -81,8 +81,8 @@ class _NoticeScreenState extends State<NoticeScreen> {
     );
   }
 
-  Widget _buildNoticeCard(dynamic notice) {
-    final isPinned = notice.isPinned ?? false;
+  Widget _buildNoticeCard(NoticeModel notice) {
+    final isPinned = notice.isPinned;
 
     Color categoryColor;
     switch (notice.category.toLowerCase()) {
@@ -107,7 +107,7 @@ class _NoticeScreenState extends State<NoticeScreen> {
                   borderRadius: BorderRadius.circular(12.r),
                 ),
                 child: Text(
-                  notice.category,
+                  notice.categoryLabel,
                   style: TextStyle(color: categoryColor, fontWeight: FontWeight.bold, fontSize: 12.sp),
                 ),
               ),
@@ -131,16 +131,16 @@ class _NoticeScreenState extends State<NoticeScreen> {
             children: [
               Row(
                 children: [
-                  Icon(Icons.people_outline, size: 16.w, color: AppColors.onSurfaceVariant),
+                  Icon(Icons.person_outline, size: 16.w, color: AppColors.onSurfaceVariant),
                   SizedBox(width: 4.w),
                   Text(
-                    'To: ${notice.targetAudience.capitalize()}',
+                    notice.createdByName ?? 'Admin',
                     style: TextStyle(color: AppColors.onSurfaceVariant, fontSize: 12.sp),
                   ),
                 ],
               ),
               Text(
-                DateFormat('MMM dd, yyyy').format(notice.createdAt ?? DateTime.now()),
+                notice.timeAgo,
                 style: TextStyle(color: AppColors.outline, fontSize: 12.sp),
               ),
             ],
@@ -150,12 +150,22 @@ class _NoticeScreenState extends State<NoticeScreen> {
     );
   }
 
-  void _showAddNoticeDialog(BuildContext context) {
+  void _showAddNoticeDialog(BuildContext context) async {
     final titleCtrl = TextEditingController();
     final contentCtrl = TextEditingController();
     String category = 'General';
-    String audience = 'student'; // Teachers mostly send notices to students
-    
+    String? selectedClassId;
+    List<Map<String, dynamic>> classes = [];
+    bool loadingClasses = true;
+
+    final userId = SupabaseService.currentUserId;
+    if (userId != null) {
+      classes = await SupabaseService.getTeacherClasses(userId);
+      loadingClasses = false;
+    }
+
+    if (!context.mounted) return;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -188,15 +198,43 @@ class _NoticeScreenState extends State<NoticeScreen> {
                     decoration: const InputDecoration(labelText: 'Content', border: OutlineInputBorder()),
                   ),
                   SizedBox(height: 16.h),
-                  DropdownButtonFormField<String>(
-                    initialValue: category,
-                    decoration: const InputDecoration(labelText: 'Category', border: OutlineInputBorder()),
-                    items: ['General', 'Academic', 'Event', 'Urgent'].map((c) {
-                      return DropdownMenuItem(value: c, child: Text(c));
-                    }).toList(),
-                    onChanged: (val) {
-                      if (val != null) setModalState(() => category = val);
-                    },
+                  Row(
+                    children: [
+                      Expanded(
+                        child: DropdownButtonFormField<String>(
+                          value: category,
+                          decoration: const InputDecoration(labelText: 'Category', border: OutlineInputBorder()),
+                          items: ['General', 'Academic', 'Event', 'Urgent'].map((c) {
+                            return DropdownMenuItem(value: c, child: Text(c));
+                          }).toList(),
+                          onChanged: (val) {
+                            if (val != null) setModalState(() => category = val);
+                          },
+                        ),
+                      ),
+                      SizedBox(width: 16.w),
+                      Expanded(
+                        child: loadingClasses 
+                          ? const Center(child: CircularProgressIndicator())
+                          : DropdownButtonFormField<String>(
+                              value: selectedClassId,
+                              hint: const Text('Select Class'),
+                              decoration: const InputDecoration(labelText: 'Target Class', border: OutlineInputBorder()),
+                              items: [
+                                const DropdownMenuItem(value: null, child: Text('All My Classes')),
+                                ...classes.map((c) {
+                                  return DropdownMenuItem(
+                                    value: c['id'].toString(), 
+                                    child: Text('${c['name']}-${c['section']}')
+                                  );
+                                }),
+                              ],
+                              onChanged: (val) {
+                                setModalState(() => selectedClassId = val);
+                              },
+                            ),
+                      ),
+                    ],
                   ),
                   SizedBox(height: 24.h),
                   SizedBox(
@@ -207,16 +245,19 @@ class _NoticeScreenState extends State<NoticeScreen> {
                         if (titleCtrl.text.isEmpty || contentCtrl.text.isEmpty) return;
                         
                         final sm = ScaffoldMessenger.of(context);
+                        
                         try {
-                          Navigator.pop(context);
                           await context.read<NoticeProvider>().addNotice(
                             NoticeModel(
                               title: titleCtrl.text,
                               content: contentCtrl.text,
-                              category: category,
-                              targetType: audience,
+                              category: category.toLowerCase(),
+                              targetType: selectedClassId == null ? 'all' : 'class',
+                              targetClassId: selectedClassId,
+                              createdBy: userId,
                             ),
                           );
+                          if (context.mounted) Navigator.pop(context);
                           sm.showSnackBar(
                             const SnackBar(content: Text('Notice sent!'), backgroundColor: AppColors.success),
                           );
@@ -241,11 +282,5 @@ class _NoticeScreenState extends State<NoticeScreen> {
         );
       },
     );
-  }
-}
-
-extension StringExtension on String {
-  String capitalize() {
-    return isNotEmpty ? "${this[0].toUpperCase()}${substring(1)}" : "";
   }
 }

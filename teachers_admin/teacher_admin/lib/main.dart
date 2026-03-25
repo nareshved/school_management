@@ -8,6 +8,7 @@ import 'core/theme/app_theme.dart';
 import 'features/auth/splash_screen.dart';
 
 import 'providers/auth_provider.dart';
+import 'providers/profile_provider.dart';
 import 'providers/dashboard_provider.dart';
 import 'providers/student_provider.dart';
 import 'providers/attendance_provider.dart';
@@ -26,6 +27,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => ProfileProvider()),
         ChangeNotifierProvider(create: (_) => TeacherDashboardProvider()),
         ChangeNotifierProvider(create: (_) => StudentProvider()),
         ChangeNotifierProvider(create: (_) => AttendanceProvider()),

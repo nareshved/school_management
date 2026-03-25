@@ -7,7 +7,8 @@ import '../../providers/dashboard_provider.dart';
 import '../../widgets/stat_card.dart';
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({super.key});
+  final void Function(int)? onNavigate;
+  const DashboardScreen({super.key, this.onNavigate});
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -147,13 +148,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
           scrollDirection: Axis.horizontal,
           child: Row(
             children: [
-              _buildActionChip(Icons.person_add_rounded, 'Add Student', AppColors.primary),
+              _buildActionChip(Icons.person_add_rounded, 'Add Student', AppColors.primary, () => widget.onNavigate?.call(1)),
               SizedBox(width: 12.w),
-              _buildActionChip(Icons.person_add_alt_1_rounded, 'Add Teacher', AppColors.secondary),
+              _buildActionChip(Icons.person_add_alt_1_rounded, 'Add Teacher', AppColors.secondary, () => widget.onNavigate?.call(2)),
               SizedBox(width: 12.w),
-              _buildActionChip(Icons.payment_rounded, 'Collect Fees', AppColors.success),
+              _buildActionChip(Icons.how_to_reg_rounded, 'Attendance', AppColors.tertiary, () => widget.onNavigate?.call(3)),
               SizedBox(width: 12.w),
-              _buildActionChip(Icons.campaign_rounded, 'Send Notice', AppColors.tertiary),
+              _buildActionChip(Icons.payment_rounded, 'Collect Fees', AppColors.success, () => widget.onNavigate?.call(4)),
+              SizedBox(width: 12.w),
+              _buildActionChip(Icons.campaign_rounded, 'Send Notice', AppColors.error, () => widget.onNavigate?.call(5)),
             ],
           ),
         ),
@@ -161,31 +164,35 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildActionChip(IconData icon, String label, Color color) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.5)),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.onSurface.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: color, size: 20.w),
-          SizedBox(width: 8.w),
-          Text(
-            label,
-            style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.onSurface, fontSize: 14.sp),
-          ),
-        ],
+  Widget _buildActionChip(IconData icon, String label, Color color, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16.r),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.5)),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.onSurface.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: color, size: 20.w),
+            SizedBox(width: 8.w),
+            Text(
+              label,
+              style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.onSurface, fontSize: 14.sp),
+            ),
+          ],
+        ),
       ),
     );
   }

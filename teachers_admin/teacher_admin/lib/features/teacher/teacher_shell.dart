@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../core/theme/app_colors.dart';
+import '../../providers/profile_provider.dart';
 
 import 'dashboard_screen.dart';
 import 'attendance_screen.dart';
@@ -18,8 +21,20 @@ class TeacherShell extends StatefulWidget {
 class _TeacherShellState extends State<TeacherShell> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = [
-    const TeacherDashboardScreen(),
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ProfileProvider>().loadProfile();
+    });
+  }
+
+  void _switchTab(int index) {
+    setState(() => _currentIndex = index);
+  }
+
+  List<Widget> get _screens => [
+    TeacherDashboardScreen(onNavigate: _switchTab),
     const TeacherAttendanceScreen(),
     const StudentListScreen(),
     const HomeworkScreen(),

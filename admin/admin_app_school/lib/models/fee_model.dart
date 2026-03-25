@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class FeeModel {
   final String? id;
   final String studentId;
@@ -71,6 +73,21 @@ class FeeModel {
   bool get isPaid => status == 'paid';
   bool get isPending => status == 'pending';
   bool get isOverdue => status == 'overdue';
+
+  Color get statusColor {
+    switch (status.toLowerCase()) {
+      case 'paid':
+        return const Color(0xFF4CAF50);
+      case 'pending':
+        return const Color(0xFFFF9800);
+      case 'overdue':
+        return const Color(0xFFF44336);
+      default:
+        return const Color(0xFF9E9E9E);
+    }
+  }
+
+  String get statusLabel => status.toUpperCase();
 
   String get initials {
     if (studentName == null) return '??';

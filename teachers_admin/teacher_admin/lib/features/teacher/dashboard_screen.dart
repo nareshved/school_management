@@ -6,7 +6,8 @@ import '../../providers/dashboard_provider.dart';
 import '../../providers/auth_provider.dart';
 
 class TeacherDashboardScreen extends StatefulWidget {
-  const TeacherDashboardScreen({super.key});
+  final void Function(int)? onNavigate;
+  const TeacherDashboardScreen({super.key, this.onNavigate});
 
   @override
   State<TeacherDashboardScreen> createState() => _TeacherDashboardScreenState();
@@ -126,9 +127,11 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
           SizedBox(height: 16.h),
           Row(
             children: [
-              _buildHeroStat('${provider.assignedClasses}', 'Assigned\nClasses', Icons.class_),
+              Expanded(child: _buildHeroStat('${provider.assignedClasses}', 'Assigned\nClasses', Icons.class_)),
               Container(width: 1, height: 40.h, color: Colors.white24, margin: EdgeInsets.symmetric(horizontal: 16.w)),
-              _buildHeroStat('${provider.activeHomeworks}', 'Active\nHomework', Icons.book),
+              Expanded(child: _buildHeroStat('${provider.activeHomeworks}', 'Active\nHomework', Icons.book)),
+              Container(width: 1, height: 40.h, color: Colors.white24, margin: EdgeInsets.symmetric(horizontal: 16.w)),
+              Expanded(child: _buildHeroStat('${provider.totalStudents}', 'Total\nStudents', Icons.people)),
             ],
           ),
         ],
@@ -162,11 +165,13 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
           scrollDirection: Axis.horizontal,
           child: Row(
             children: [
-              _buildActionChip(Icons.how_to_reg, 'Mark Attendance', AppColors.primary),
+              _buildActionChip(Icons.how_to_reg, 'Mark Attendance', AppColors.primary, () => widget.onNavigate?.call(1)),
               SizedBox(width: 12.w),
-              _buildActionChip(Icons.upload_file, 'Upload Homework', AppColors.secondary),
+              _buildActionChip(Icons.upload_file, 'Upload Homework', AppColors.secondary, () => widget.onNavigate?.call(3)),
               SizedBox(width: 12.w),
-              _buildActionChip(Icons.campaign_rounded, 'Send Notice', AppColors.tertiary),
+              _buildActionChip(Icons.campaign_rounded, 'Send Notice', AppColors.tertiary, () => widget.onNavigate?.call(4)),
+              SizedBox(width: 12.w),
+              _buildActionChip(Icons.people_rounded, 'View Students', AppColors.primary, () => widget.onNavigate?.call(2)),
             ],
           ),
         ),
@@ -174,31 +179,35 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
     );
   }
 
-  Widget _buildActionChip(IconData icon, String label, Color color) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(16.r),
-        border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.5)),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.onSurface.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: color, size: 20.w),
-          SizedBox(width: 8.w),
-          Text(
-            label,
-            style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.onSurface, fontSize: 14.sp),
-          ),
-        ],
+  Widget _buildActionChip(IconData icon, String label, Color color, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16.r),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.5)),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.onSurface.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: color, size: 20.w),
+            SizedBox(width: 8.w),
+            Text(
+              label,
+              style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.onSurface, fontSize: 14.sp),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -237,7 +246,7 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
                         shape: BoxShape.circle,
                       ),
                       child: Text(
-                        c['class_name'] ?? 'C',
+                        (c['name']?.toString().isNotEmpty ?? false) ? c['name'][0].toString() : 'C',
                         style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 16.sp),
                       ),
                     ),
@@ -246,8 +255,8 @@ class _TeacherDashboardScreenState extends State<TeacherDashboardScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Class ${c['class_name']} - Section ${c['section']}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp)),
-                          Text('Subject ID: ${c['subject_id'] ?? 'N/A'}', style: TextStyle(color: AppColors.onSurfaceVariant, fontSize: 14.sp)),
+                          Text('Class ${c['name']} - Section ${c['section']}', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp)),
+                          Text(provider.subjectName, style: TextStyle(color: AppColors.onSurfaceVariant, fontSize: 14.sp)),
                         ],
                       ),
                     ),

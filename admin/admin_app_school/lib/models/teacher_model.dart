@@ -73,4 +73,6 @@ class TeacherModel {
 
   String get primaryClass =>
       assignedClasses.isNotEmpty ? assignedClasses.first : 'Unassigned';
+
+  String get displaySubject => subjectName ?? 'No Subject';
 }

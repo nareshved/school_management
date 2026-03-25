@@ -15,15 +15,15 @@ class StudentProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
-      final teacherId = SupabaseService.currentUserId;
-      if (teacherId == null) return;
-      _classes = await SupabaseService.getTeacherClasses(teacherId);
-      final classIds = _classes.map((e) => e['id']).toList();
+      final userId = SupabaseService.currentUserId;
+      if (userId == null) return;
       
-      final allStudents = await SupabaseService.getStudents();
-      _students = allStudents.where((s) => classIds.contains(s.classId)).toList();
+      _classes = await SupabaseService.getTeacherClasses(userId);
+      final classIds = _classes.map((e) => e['id'].toString()).toList();
+      
+      _students = await SupabaseService.getStudentsByClassIds(classIds);
     } catch (e) {
-      // Log error
+      debugPrint('Error loading students: $e');
     } finally {
       _isLoading = false;
       notifyListeners();

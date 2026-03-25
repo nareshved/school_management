@@ -17,14 +17,15 @@ class AddEditTeacherScreen extends StatefulWidget {
 
 class _AddEditTeacherScreenState extends State<AddEditTeacherScreen> {
   final _formKey = GlobalKey<FormState>();
-  
+
   late TextEditingController _fullNameCtrl;
   late TextEditingController _emailCtrl;
   late TextEditingController _phoneCtrl;
   late TextEditingController _qualificationCtrl;
   late TextEditingController _experienceCtrl;
-  
+
   String? _selectedSubjectId;
+  final Set<String> _selectedClassIds = {};
 
   @override
   void initState() {
@@ -36,6 +37,19 @@ class _AddEditTeacherScreenState extends State<AddEditTeacherScreen> {
     _qualificationCtrl = TextEditingController(text: '');
     _experienceCtrl = TextEditingController(text: '');
     _selectedSubjectId = t?.subjectId;
+
+    // Pre-populate assigned classes when editing
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = context.read<TeacherProvider>();
+      if (t != null && t.assignedClasses.isNotEmpty) {
+        for (final cls in provider.classes) {
+          final label = '${cls['name']}-${cls['section']}';
+          if (t.assignedClasses.contains(label)) {
+            setState(() => _selectedClassIds.add(cls['id'].toString()));
+          }
+        }
+      }
+    });
   }
 
   @override
@@ -50,12 +64,12 @@ class _AddEditTeacherScreenState extends State<AddEditTeacherScreen> {
 
   Future<void> _saveTeacher() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     final provider = context.read<TeacherProvider>();
 
     final teacher = TeacherModel(
       id: widget.teacher?.id,
-      userId: widget.teacher?.userId, // usually mapped to auth user if they log in
+      userId: widget.teacher?.userId,
       fullName: _fullNameCtrl.text.trim(),
       email: _emailCtrl.text.trim().isEmpty ? null : _emailCtrl.text.trim(),
       phone: _phoneCtrl.text.trim().isEmpty ? null : _phoneCtrl.text.trim(),
@@ -64,12 +78,14 @@ class _AddEditTeacherScreenState extends State<AddEditTeacherScreen> {
     );
 
     try {
-      await provider.addOrUpdateTeacher(teacher);
+      await provider.addOrUpdateTeacher(teacher, _selectedClassIds.toList());
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(widget.teacher == null ? 'Teacher added successfully' : 'Teacher updated'),
+            content: Text(widget.teacher == null
+                ? 'Teacher added successfully'
+                : 'Teacher updated'),
             backgroundColor: AppColors.success,
           ),
         );
@@ -77,7 +93,8 @@ class _AddEditTeacherScreenState extends State<AddEditTeacherScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: AppColors.error),
+          SnackBar(
+              content: Text('Error: $e'), backgroundColor: AppColors.error),
         );
       }
     }
@@ -85,29 +102,52 @@ class _AddEditTeacherScreenState extends State<AddEditTeacherScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isSaving = context.watch<TeacherProvider>().isLoading;
+    final provider = context.watch<TeacherProvider>();
+    final isSaving = provider.isLoading;
+    final classes = provider.classes;
 
     return Scaffold(
       backgroundColor: AppColors.surface,
       appBar: AppBar(
-        title: Text(widget.teacher == null ? 'Add New Teacher' : 'Edit Teacher', style: TextStyle(fontSize: 20.sp)),
+        title: Text(
+          widget.teacher == null ? 'Add New Teacher' : 'Edit Teacher',
+          style: TextStyle(fontSize: 20.sp),
+        ),
+        actions: [
+          Padding(
+            padding: EdgeInsets.only(right: 16.w),
+            child: TextButton(
+              onPressed: isSaving ? null : _saveTeacher,
+              child: Text(
+                'Save',
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primary,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
       body: Form(
         key: _formKey,
         child: ListView(
           padding: EdgeInsets.all(24.w),
           children: [
+            // Avatar
             Center(
               child: Stack(
                 children: [
                   CircleAvatar(
                     radius: 50.r,
                     backgroundColor: AppColors.secondaryContainer,
-                    backgroundImage: widget.teacher?.avatarUrl != null 
-                        ? NetworkImage(widget.teacher!.avatarUrl!) 
+                    backgroundImage: widget.teacher?.avatarUrl != null
+                        ? NetworkImage(widget.teacher!.avatarUrl!)
                         : null,
-                    child: widget.teacher?.avatarUrl == null 
-                        ? Icon(Icons.person, size: 50.w, color: AppColors.secondary)
+                    child: widget.teacher?.avatarUrl == null
+                        ? Icon(Icons.person_rounded,
+                            size: 50.w, color: AppColors.secondary)
                         : null,
                   ),
                   Positioned(
@@ -119,27 +159,34 @@ class _AddEditTeacherScreenState extends State<AddEditTeacherScreen> {
                         color: AppColors.secondary,
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(Icons.camera_alt, color: Colors.white, size: 20.w),
+                      child:
+                          Icon(Icons.camera_alt, color: Colors.white, size: 18.w),
                     ),
                   ),
                 ],
               ),
             ),
             SizedBox(height: 32.h),
-            
-            Text('Professional Information', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: 16.sp)),
+
+            // ─── Section: Professional Info ───
+            _sectionHeader(Icons.badge_outlined, 'Professional Information',
+                AppColors.primary),
             SizedBox(height: 16.h),
-            
             TextFormField(
               controller: _fullNameCtrl,
-              decoration: const InputDecoration(labelText: 'Full Name *', prefixIcon: Icon(Icons.person_outline)),
-              validator: (v) => v!.isEmpty ? 'Required' : null,
+              decoration: const InputDecoration(
+                labelText: 'Full Name *',
+                prefixIcon: Icon(Icons.person_outline),
+              ),
+              validator: (v) => v!.trim().isEmpty ? 'Required' : null,
             ),
             SizedBox(height: 16.h),
-            
             DropdownButtonFormField<String>(
-              initialValue: _selectedSubjectId,
-              decoration: const InputDecoration(labelText: 'Primary Subject', prefixIcon: Icon(Icons.menu_book_rounded)),
+              value: _selectedSubjectId,
+              decoration: const InputDecoration(
+                labelText: 'Primary Subject',
+                prefixIcon: Icon(Icons.menu_book_rounded),
+              ),
               items: widget.subjects.map((s) {
                 return DropdownMenuItem(
                   value: s['id'].toString(),
@@ -149,57 +196,163 @@ class _AddEditTeacherScreenState extends State<AddEditTeacherScreen> {
               onChanged: (val) => setState(() => _selectedSubjectId = val),
             ),
             SizedBox(height: 16.h),
-            
             Row(
               children: [
                 Expanded(
                   child: TextFormField(
                     controller: _qualificationCtrl,
-                    decoration: const InputDecoration(labelText: 'Qualification', prefixIcon: Icon(Icons.school_outlined)),
+                    decoration: const InputDecoration(
+                      labelText: 'Qualification',
+                      prefixIcon: Icon(Icons.school_outlined),
+                    ),
                   ),
                 ),
                 SizedBox(width: 16.w),
                 Expanded(
                   child: TextFormField(
                     controller: _experienceCtrl,
-                    decoration: const InputDecoration(labelText: 'Experience (Years)', prefixIcon: Icon(Icons.work_outline)),
+                    decoration: const InputDecoration(
+                      labelText: 'Exp. (Years)',
+                      prefixIcon: Icon(Icons.work_outline),
+                    ),
                     keyboardType: TextInputType.number,
                   ),
                 ),
               ],
             ),
-            SizedBox(height: 32.h),
-            
-            Text('Contact Information', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontSize: 16.sp)),
+            SizedBox(height: 28.h),
+
+            // ─── Section: Contact Info ───
+            _sectionHeader(
+                Icons.contact_phone_outlined, 'Contact Information', AppColors.secondary),
             SizedBox(height: 16.h),
-            
             TextFormField(
               controller: _emailCtrl,
-              decoration: const InputDecoration(labelText: 'Email Address', prefixIcon: Icon(Icons.email_outlined)),
+              decoration: const InputDecoration(
+                labelText: 'Email Address',
+                prefixIcon: Icon(Icons.email_outlined),
+              ),
               keyboardType: TextInputType.emailAddress,
             ),
             SizedBox(height: 16.h),
-            
             TextFormField(
               controller: _phoneCtrl,
-              decoration: const InputDecoration(labelText: 'Phone Number', prefixIcon: Icon(Icons.phone)),
+              decoration: const InputDecoration(
+                labelText: 'Phone Number',
+                prefixIcon: Icon(Icons.phone_outlined),
+              ),
               keyboardType: TextInputType.phone,
             ),
-            SizedBox(height: 48.h),
-            
+            SizedBox(height: 28.h),
+
+            // ─── Section: Assign Classes ───
+            _sectionHeader(
+                Icons.class_outlined, 'Assign Classes', AppColors.tertiary),
+            SizedBox(height: 8.h),
+            if (classes.isEmpty)
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 16.h),
+                child: Center(
+                  child: Text('No classes available',
+                      style: TextStyle(
+                          color: AppColors.onSurfaceVariant, fontSize: 14.sp)),
+                ),
+              )
+            else
+              Wrap(
+                spacing: 8.w,
+                runSpacing: 8.h,
+                children: classes.map((cls) {
+                  final id = cls['id'].toString();
+                  final label = '${cls['name']}-${cls['section']}';
+                  final isSelected = _selectedClassIds.contains(id);
+                  return FilterChip(
+                    label: Text(label,
+                        style: TextStyle(
+                            fontSize: 13.sp,
+                            fontWeight: FontWeight.w600,
+                            color: isSelected
+                                ? Colors.white
+                                : AppColors.onSurface)),
+                    selected: isSelected,
+                    onSelected: (val) {
+                      setState(() {
+                        if (val) {
+                          _selectedClassIds.add(id);
+                        } else {
+                          _selectedClassIds.remove(id);
+                        }
+                      });
+                    },
+                    selectedColor: AppColors.tertiary,
+                    checkmarkColor: Colors.white,
+                    backgroundColor: AppColors.surfaceContainerLowest,
+                    side: BorderSide(
+                        color: isSelected
+                            ? AppColors.tertiary
+                            : AppColors.outlineVariant),
+                  );
+                }).toList(),
+              ),
+            SizedBox(height: 40.h),
+
+            // Save Button
             SizedBox(
               height: 56.h,
-              child: ElevatedButton(
+              child: ElevatedButton.icon(
                 onPressed: isSaving ? null : _saveTeacher,
-                style: ElevatedButton.styleFrom(backgroundColor: AppColors.secondary, foregroundColor: Colors.white),
-                child: isSaving 
-                    ? SizedBox(height: 24.h, width: 24.w, child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                    : Text(widget.teacher == null ? 'Add Teacher' : 'Save Changes', style: TextStyle(fontSize: 16.sp)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16.r)),
+                ),
+                icon: isSaving
+                    ? SizedBox(
+                        height: 20.h,
+                        width: 20.w,
+                        child: const CircularProgressIndicator(
+                            color: Colors.white, strokeWidth: 2))
+                    : Icon(
+                        widget.teacher == null
+                            ? Icons.person_add_alt_1_rounded
+                            : Icons.save_rounded,
+                        size: 20.w),
+                label: Text(
+                  widget.teacher == null ? 'Add Teacher' : 'Save Changes',
+                  style: TextStyle(
+                      fontSize: 16.sp, fontWeight: FontWeight.bold),
+                ),
               ),
             ),
+            SizedBox(height: 24.h),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _sectionHeader(IconData icon, String title, Color color) {
+    return Row(
+      children: [
+        Container(
+          padding: EdgeInsets.all(8.w),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(10.r),
+          ),
+          child: Icon(icon, color: color, size: 18.w),
+        ),
+        SizedBox(width: 10.w),
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 15.sp,
+            fontWeight: FontWeight.bold,
+            color: AppColors.onSurface,
+          ),
+        ),
+      ],
     );
   }
 }

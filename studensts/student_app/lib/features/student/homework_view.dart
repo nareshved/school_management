@@ -25,15 +25,21 @@ class _HomeworkViewState extends State<HomeworkView> {
   }
 
   Future<void> _loadHomework() async {
-    final classId = context.read<AuthProvider>().currentStudent?.classId;
-    if (classId != null) {
-      await context.read<HomeworkProvider>().loadHomeworks(classId.toString());
+    final auth = context.read<AuthProvider>();
+    final classId = auth.currentStudent?.classId;
+    final studentId = auth.currentStudent?.id;
+    if (classId != null && studentId != null) {
+      await context.read<HomeworkProvider>().loadHomeworks(
+            classId.toString(),
+            studentId: studentId.toString(),
+          );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<HomeworkProvider>();
+    final studentId = context.read<AuthProvider>().currentStudent?.id;
 
     return Scaffold(
       appBar: AppBar(
@@ -49,12 +55,14 @@ class _HomeworkViewState extends State<HomeworkView> {
                 itemCount: provider.homeworks.length,
                 itemBuilder: (context, index) {
                   final hw = provider.homeworks[index];
+                  final hwId = hw['id'].toString();
                   final subjectName = hw['subjects']['name'] ?? 'Subject';
                   final teacherName = hw['teachers']['full_name'] ?? 'Teacher';
                   final title = hw['title'] ?? 'Title';
                   final description = hw['description'] ?? '';
                   final dueDate = DateTime.parse(hw['due_date']);
                   final isOverdue = dueDate.isBefore(DateTime.now());
+                  final isCompleted = provider.isCompleted(hwId);
 
                   return CustomCard(
                     margin: EdgeInsets.only(bottom: 16.h),
@@ -68,13 +76,15 @@ class _HomeworkViewState extends State<HomeworkView> {
                             Container(
                               padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
                               decoration: BoxDecoration(
-                                color: AppColors.primaryContainer,
+                                color: isCompleted 
+                                  ? Colors.green.withOpacity(0.1) 
+                                  : AppColors.primaryContainer,
                                 borderRadius: BorderRadius.circular(12.r),
                               ),
                               child: Text(
-                                subjectName,
+                                isCompleted ? 'Completed' : subjectName,
                                 style: TextStyle(
-                                  color: AppColors.primary,
+                                  color: isCompleted ? Colors.green : AppColors.primary,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12.sp,
                                 ),
@@ -83,8 +93,10 @@ class _HomeworkViewState extends State<HomeworkView> {
                             Text(
                               'Due: ${DateFormat('MMM d, yyyy').format(dueDate)}',
                               style: TextStyle(
-                                color: isOverdue ? AppColors.error : AppColors.onSurfaceVariant,
-                                fontWeight: isOverdue ? FontWeight.bold : FontWeight.normal,
+                                color: isOverdue && !isCompleted 
+                                  ? AppColors.error 
+                                  : AppColors.onSurfaceVariant,
+                                fontWeight: (isOverdue && !isCompleted) ? FontWeight.bold : FontWeight.normal,
                                 fontSize: 12.sp,
                               ),
                             ),
@@ -95,6 +107,8 @@ class _HomeworkViewState extends State<HomeworkView> {
                           title,
                           style: Theme.of(context).textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
+                                decoration: isCompleted ? TextDecoration.lineThrough : null,
+                                color: isCompleted ? AppColors.onSurfaceVariant : null,
                               ),
                         ),
                         SizedBox(height: 8.h),
@@ -123,16 +137,36 @@ class _HomeworkViewState extends State<HomeworkView> {
                               ),
                             ),
                             const Spacer(),
-                            FilledButton.tonal(
-                              onPressed: () {
-                                // TODO: Navigate to detail/submission screen
-                              },
-                              style: FilledButton.styleFrom(
-                                padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                                minimumSize: Size.zero,
-                              ),
-                              child: Text('View Details', style: TextStyle(fontSize: 12.sp)),
-                            ),
+                            if (!isCompleted)
+                              FilledButton.tonal(
+                                onPressed: () async {
+                                  if (studentId != null) {
+                                    try {
+                                      await provider.markAsDone(studentId.toString(), hwId);
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(content: Text('Homework marked as done!')),
+                                        );
+                                      }
+                                    } catch (e) {
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text('Error: $e')),
+                                        );
+                                      }
+                                    }
+                                  }
+                                },
+                                style: FilledButton.styleFrom(
+                                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                                  minimumSize: Size.zero,
+                                  backgroundColor: AppColors.primaryContainer,
+                                  foregroundColor: AppColors.primary,
+                                ),
+                                child: Text('Mark Done', style: TextStyle(fontSize: 12.sp)),
+                              )
+                            else
+                              Icon(Icons.check_circle, color: Colors.green, size: 24.sp),
                           ],
                         ),
                       ],

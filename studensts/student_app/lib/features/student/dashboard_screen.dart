@@ -9,7 +9,8 @@ import '../../widgets/custom_card.dart';
 import '../../widgets/stat_card.dart';
 
 class StudentDashboardScreen extends StatefulWidget {
-  const StudentDashboardScreen({super.key});
+  final void Function(int)? onNavigate;
+  const StudentDashboardScreen({super.key, this.onNavigate});
 
   @override
   State<StudentDashboardScreen> createState() => _StudentDashboardScreenState();
@@ -28,9 +29,13 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     final auth = context.read<AuthProvider>();
     final student = auth.currentStudent;
     if (student != null) {
-      await context
-          .read<DashboardProvider>()
-          .loadDashboardData(student.classId?.toString() ?? '', student.id ?? '');
+      final classId = student.classId ?? '';
+      final studentId = student.id ?? '';
+      if (classId.isNotEmpty && studentId.isNotEmpty) {
+        await context
+            .read<DashboardProvider>()
+            .loadDashboardData(classId, studentId);
+      }
     }
   }
 
@@ -138,11 +143,13 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                                 ),
                                 SizedBox(height: 4.h),
                                 Text(
-                                  'Class - ${student.className} ${student.section}',
+                                  student.className != null
+                                      ? 'Class ${student.className}-${student.section ?? 'A'}'
+                                      : 'Class Not Assigned',
                                   style: Theme.of(context).textTheme.bodyMedium,
                                 ),
                                 Text(
-                                  'Roll No: ${student.rollNumber}',
+                                  'Roll No: ${student.rollNumber ?? '-'}',
                                   style: Theme.of(context)
                                       .textTheme
                                       .bodySmall
@@ -213,8 +220,83 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                           ),
                         ],
                       ),
+                    SizedBox(height: 28.h),
+
+                    // Quick Actions
+                    Text(
+                      'Quick Actions',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 16.h),
+                    GridView.count(
+                      crossAxisCount: 2,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      crossAxisSpacing: 12.w,
+                      mainAxisSpacing: 12.w,
+                      childAspectRatio: 2.4,
+                      children: [
+                        _buildActionTile(
+                          Icons.calendar_month_outlined,
+                          'My Attendance',
+                          AppColors.primary,
+                          () => widget.onNavigate?.call(1),
+                        ),
+                        _buildActionTile(
+                          Icons.assignment_outlined,
+                          'Homework',
+                          AppColors.secondary,
+                          () => widget.onNavigate?.call(2),
+                        ),
+                        _buildActionTile(
+                          Icons.payments_outlined,
+                          'My Fees',
+                          AppColors.success,
+                          () => widget.onNavigate?.call(3),
+                        ),
+                        _buildActionTile(
+                          Icons.campaign_outlined,
+                          'Notices',
+                          AppColors.tertiary,
+                          () => widget.onNavigate?.call(4),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionTile(IconData icon, String label, Color color, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16.r),
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(16.r),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: color, size: 22.w),
+            SizedBox(width: 10.w),
+            Flexible(
+              child: Text(
+                label,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                  fontSize: 13.sp,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
